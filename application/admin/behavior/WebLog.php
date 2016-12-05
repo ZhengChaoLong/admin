@@ -19,10 +19,9 @@ use think\Session;
 use think\Config;
 use think\Request;
 
-class WebLog
-{
-    public function run(&$param)
-    {
+class WebLog{
+
+    public function run(&$param){
         // 屏蔽异常
         try {
             $request = Request::instance();

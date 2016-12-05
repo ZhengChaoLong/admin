@@ -22,6 +22,10 @@ class AdminGroup extends Controller
 {
     use \app\admin\traits\controller\Controller;
 
+    /**
+     * @desc 过滤掉不需要的CURD函数
+     * @var array
+     */
     protected static $blacklist = ['deleteforever', 'clear'];
 
     protected function filter(&$map)

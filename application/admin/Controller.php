@@ -23,8 +23,12 @@ use think\Exception;
 use think\exception\HttpException;
 use think\exception\HttpResponseException;
 
-class Controller
-{
+/**
+ * @desc 基类控制器
+ * Class Controller
+ * @package app\admin
+ */
+class Controller{
     // 视图类实例
     protected $view;
     // Request实例
@@ -34,8 +38,7 @@ class Controller
     // 是否删除标志，0-正常|1-删除|false-不包含该字段
     protected static $isdelete = 0;
 
-    public function __construct()
-    {
+    public function __construct(){
         if (null === $this->view) {
             $this->view = View::instance(Config::get('template'), Config::get('view_replace_str'));
         }
@@ -70,8 +73,7 @@ class Controller
     /**
      * 自动搜索查询字段,给模型字段过滤
      */
-    protected function search($model)
-    {
+    protected function search($model){
         $map = [];
         $table_info = $model->getTableInfo();
         foreach ($this->request->param() as $key => $val) {
@@ -88,8 +90,7 @@ class Controller
      * @param string $controller
      * @return mixed
      */
-    protected function getModel($controller = '')
-    {
+    protected function getModel($controller = ''){
         $module = $this->request->module();
         if (!$controller) {
             $controller = $this->request->controller();
@@ -118,12 +119,13 @@ class Controller
     }
 
     /**
-     * 默认更新字段方法
+     * @desc 默认更新字段方法
      * @param string $field     更新的字段
      * @param string|int $value 更新的值
      * @param string $msg       操作成功提示信息
      * @param string $pk        主键，默认为主键
      * @param string $input     接收参数，默认为主键
+     * @return Response|\think\response\Json|\think\response\Jsonp|Redirect|\think\response\View|\think\response\Xml
      */
     protected function updateField($field, $value, $msg = "操作成功", $pk = "", $input = "")
     {
@@ -218,6 +220,7 @@ class Controller
      * @param string $error
      * @param string $method
      * @param string $key
+     * * @throws Exception
      */
     protected function filterId($filterData, $error = '该记录不能执行此操作', $method = 'in_array', $key = 'id')
     {

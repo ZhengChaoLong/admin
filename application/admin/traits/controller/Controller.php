@@ -111,8 +111,9 @@ trait Controller
     }
 
     /**
-     * 编辑
-     * @return mixed
+     * @desc 编辑
+     * @return \think\Response|\think\response\Json|\think\response\Jsonp|\think\response\Redirect|\think\response\View|\think\response\Xml
+     * @throws Exception
      */
     public function edit()
     {
