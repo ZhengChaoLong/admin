@@ -53,6 +53,35 @@ if (is_file(ROOT_PATH . '.env')) {
     }
 }
 
+//如果设定了环境变量，优先使用环境变量来判断开发环境
+if ($env = getenv('ZY_ENVIRONMENT')) {
+    define('ZY_ENVIRNMENT', $env);
+} else {
+    //运行环境判断
+    switch ($_SERVER['HTTP_HOST']) {
+        case '127.0.0.1':
+        case 'localhost':
+        case '192.168.6.20':
+            define('ZY_ENVIRNMENT', 'test');
+            break;
+        case '59.151.93.132:12345':
+            //灰度环境
+            define('ZY_ENVIRNMENT', 'gray');
+            break;
+        default:
+            //其余的认为是正式环境
+            define('ZY_ENVIRNMENT', 'product');
+    }
+}
+if (ZY_ENVIRNMENT == 'product'){
+    //关闭调试模式
+    config('app_debug',false);
+}else{
+    //开启调试模式
+    config('app_debug',true);
+}
+
+
 // 注册自动加载
 \think\Loader::register();
 

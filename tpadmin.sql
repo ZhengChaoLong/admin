@@ -173,7 +173,7 @@ CREATE TABLE `tp_admin_role` (
   `pid` smallint(6) unsigned NOT NULL,
   `name` varchar(20) NOT NULL,
   `remark` varchar(255) NOT NULL,
-  `status` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态0禁用',
   `isdelete` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `create_time` int(11) unsigned NOT NULL,
   `update_time` int(11) unsigned NOT NULL,
