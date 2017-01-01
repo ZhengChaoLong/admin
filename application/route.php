@@ -14,6 +14,9 @@
 
 use think\Route;
 
+//注册资源路由
+Route::resource('blog','index/Blog');
+
 Route::get('/',function(){
     return 'Hello,world!';
 });
