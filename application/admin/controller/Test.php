@@ -13,4 +13,8 @@ class Test extends Controller{
     public function Index(){
         var_dump('test');
     }
+
+    public function RouteRule(){
+        var_dump('定义路由规则');
+    }
 }

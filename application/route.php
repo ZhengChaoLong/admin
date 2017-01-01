@@ -20,6 +20,15 @@ Route::get('/',function(){
 
 Route::rule('test','admin/Test/index','get');
 
+//后缀
+Route::get('route','admin/Test/RouteRule',['ext'=>'html']);
+
+//路由到方法
+Route::get('routeToMethod','index/Index/ruleToMethod');
+
+//路由到类(任何)的方法
+Route::rule('routeToClassMethod','app\index\api\test@apiRuleToClassMethod');
+
 return [
     '__pattern__' => [
         'name' => '\w+',
