@@ -2,6 +2,7 @@
 namespace app\index\controller;
 
 use think\Controller;
+use think\Request;
 
 class Index extends controller{
 
@@ -34,6 +35,13 @@ class Index extends controller{
     public function ruleToMethod(){
         //var_dump('路由到方法');
         $arr = ['路由到方法'];
-        return json($arr,200);
+        $request = Request::instance();
+        var_dump(
+            $request->url(true),
+            $request->module(),
+            $request->controller(),
+            $request->action());
+
+        //return json($arr,200);
     }
 }

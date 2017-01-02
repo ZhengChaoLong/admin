@@ -14,7 +14,7 @@
 
 use think\Route;
 
-//注册资源路由
+//注册资源路由 人生的路总归要 自己走
 Route::resource('blog','index/Blog');
 
 Route::get('/',function(){
