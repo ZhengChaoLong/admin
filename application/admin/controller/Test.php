@@ -29,4 +29,8 @@ class Test extends Controller{
         $cacheObj = Cache::connect($cacheConfig);
         var_dump($cacheObj);
     }
+
+    public function RouteRule(){
+        var_dump('定义路由规则');
+    }
 }
