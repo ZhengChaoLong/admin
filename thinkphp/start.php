@@ -14,5 +14,14 @@ namespace think;
 // ThinkPHP 引导文件
 // 加载基础文件
 require __DIR__ . '/base.php';
+
+if (ZY_ENVIRNMENT == 'product'){
+    //关闭调试模式
+    Config::set('app_debug',false);
+}else{
+    //开启调试模式
+    Config::set('app_debug',true);
+}
+
 // 执行应用
 App::run()->send();

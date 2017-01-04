@@ -73,14 +73,6 @@ if ($env = getenv('ZY_ENVIRONMENT')) {
             define('ZY_ENVIRNMENT', 'product');
     }
 }
-if (ZY_ENVIRNMENT == 'product'){
-    //关闭调试模式
-    config('app_debug',false);
-}else{
-    //开启调试模式
-    config('app_debug',true);
-}
-
 
 // 注册自动加载
 \think\Loader::register();

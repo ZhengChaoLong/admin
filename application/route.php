@@ -17,9 +17,6 @@ use think\Route;
 //注册资源路由 人生的路总归要 自己走
 Route::resource('blog','index/Blog');
 
-Route::get('/',function(){
-    return 'Hello,world!';
-});
 
 Route::rule('test','admin/Test/index','get');
 
@@ -40,5 +37,4 @@ return [
         ':id'   => ['index/hello', ['method' => 'get'], ['id' => '\d+']],
         ':name' => ['index/hello', ['method' => 'post']],
     ],
-
 ];

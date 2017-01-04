@@ -1088,3 +1088,25 @@ CREATE TABLE `tp_web_log_all` (
 -- ----------------------------
 -- Records of tp_web_log_all
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for tp_admin_activity
+-- ----------------------------
+DROP TABLE IF EXISTS `tp_admin_activity`;
+CREATE TABLE `tp_admin_activity` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '活动主键',
+  `type` smallint(6) NOT NULL COMMENT '活动类型',
+  `startTime` int(11) DEFAULT NULL COMMENT '开始时间',
+  `endTime` int(11) DEFAULT NULL COMMENT '结束时间',
+  `description` varchar(255) DEFAULT NULL COMMENT '描述',
+  `channelIds` varchar(255) DEFAULT NULL COMMENT '渠道',
+  `rule` text COMMENT '规则',
+  `ext` text COMMENT '扩展',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态，1-正常 | 0-禁用',
+  `isdelete` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '删除状态，1-删除 | 0-正常',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='活动'
+
+-- ----------------------------
+-- Records of tp_admin_activity
+-- ----------------------------
