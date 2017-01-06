@@ -14,7 +14,6 @@ use think\Exception;
 use think\Db;
 use think\Loader;
 use think\exception\HttpException;
-use think\Config;
 
 trait Controller
 {
@@ -25,9 +24,10 @@ trait Controller
     public function index()
     {
         $model = $this->getModel();
-
         // 列表过滤器，生成查询Map对象
         $map = $this->search($model);
+
+        //@TODO 如果传值到当前对象的
         if ($this::$isdelete !== false) {
             $map['isdelete'] = $this::$isdelete;
         }
@@ -44,7 +44,6 @@ trait Controller
         }
 
         $this->datalist($model, $map);
-
         return $this->view->fetch();
     }
 

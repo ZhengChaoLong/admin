@@ -39,9 +39,11 @@ class Controller{
     protected static $isdelete = 0;
 
     public function __construct(){
+        //实例化模板
         if (null === $this->view) {
             $this->view = View::instance(Config::get('template'), Config::get('view_replace_str'));
         }
+        //实例化request
         if (null === $this->request) {
             $this->request = Request::instance();
         }
