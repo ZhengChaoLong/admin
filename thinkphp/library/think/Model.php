@@ -735,7 +735,8 @@ abstract class Model implements \JsonSerializable, \ArrayAccess
      * @access public
      * @param array     $dataSet 数据
      * @param boolean   $replace 是否自动识别更新和写入
-     * @return array|false
+     * @return array|bool
+     * @throws \Exception
      */
     public function saveAll($dataSet, $replace = true)
     {
