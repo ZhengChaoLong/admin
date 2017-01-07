@@ -1110,3 +1110,21 @@ CREATE TABLE `tp_admin_activity` (
 -- ----------------------------
 -- Records of tp_admin_activity
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for tp_admin_model
+-- ----------------------------
+CREATE TABLE `tp_admin_model` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `name` char(30) NOT NULL COMMENT '模型名称',
+  `description` char(100) NOT NULL COMMENT '关于模型的描述',
+  `tablename` char(20) NOT NULL '模型的表',
+  `disabled` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '模型是否启用',
+  `sort` tinyint(3) NOT NULL COMMENT '排序',
+  `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
+  PRIMARY KEY (`id`),
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+
+-- ----------------------------
+-- Records of tp_admin_model
+-- ----------------------------
