@@ -1128,3 +1128,40 @@ CREATE TABLE `tp_admin_model` (
 -- ----------------------------
 -- Records of tp_admin_model
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for tp_admin_model_field
+-- ----------------------------
+CREATE TABLE `tp_admin_model_field` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT comment 'Primary key',
+  `modelid` smallint(5) unsigned NOT NULL DEFAULT '0' comment '模型ID',
+  `field` varchar(20) NOT NULL comment '字段',
+  `name` varchar(30) NOT NULL comment '名称',
+  `tips` text NOT NULL comment '描述',
+  `css` varchar(30) NOT NULL comment '样式',
+  `minlength` int(10) unsigned NOT NULL DEFAULT '0' comment '最小长度',
+  `maxlength` int(10) unsigned NOT NULL DEFAULT '0' comment '最大长度',
+  `pattern` varchar(255) NOT NULL comment '正则过滤',
+  `errortips` varchar(255) NOT NULL comment '错误提示',
+  `formtype` varchar(20) NOT NULL comment '显示格式',
+  `setting` mediumtext NOT NULL,
+  `formattribute` varchar(255) NOT NULL,
+  `unsetgroupids` varchar(255) NOT NULL,
+  `unsetroleids` varchar(255) NOT NULL,
+  `iscore` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `issystem` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `isunique` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `isbase` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `issearch` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `isadd` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `isfulltext` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `isposition` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `listorder` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `disabled` tinyint(1) unsigned NOT NULL DEFAULT '0' comment '是否可用',
+  PRIMARY KEY (`id`),
+  KEY `modelid` (`modelid`,`disabled`),
+  KEY `field` (`field`,`modelid`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+-- ----------------------------
+-- Records of tp_admin_model_field
+-- ----------------------------
