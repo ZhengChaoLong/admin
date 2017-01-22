@@ -19,8 +19,8 @@ return [
     // 模板参数替换
     'view_replace_str' => [
         '__ROOT__'   => $basename,
-        '__STATIC__' => $basename . '/static/admin',
-        '__LIB__'    => $basename . '/static/admin/lib',
+        '__STATIC__' => $basename . '/public/static/admin',
+        '__LIB__'    => $basename . '/public/static/admin/lib',
     ],
 
     // traits 目录

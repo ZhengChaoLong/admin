@@ -467,7 +467,17 @@ CREATE TABLE `zy_admin_model` (
   `addtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`),
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
-
+CREATE TABLE `zy_admin_model` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT comment '模型ID 自增',
+  `name` varchar(30) NOT NULL comment '名称',
+  `description` varchar(100) NOT NULL comment '描述',
+  `tablename` varchar(30) NOT NULL comment '表名称',
+  `setting` text NOT NULL comment '设置相关信息',
+  `disabled` tinyint(1) unsigned NOT NULL DEFAULT '0' comment '是否可用',
+  `addtime` int(10) unsigned NOT NULL DEFAULT '0' comment '添加时间',
+  `updatetime` int(10) unsigned NOT NULL DEFAULT '0' comment '更新时间',
+  PRIMARY KEY (`id`), 
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
 -- ----------------------------
 -- Records of zy_admin_model
 -- ----------------------------
@@ -487,7 +497,7 @@ CREATE TABLE `zy_admin_model_field` (
   `maxlength` int(10) unsigned NOT NULL DEFAULT '0' comment '最大长度',
   `pattern` varchar(255) NOT NULL comment '正则过滤',
   `errortips` varchar(255) NOT NULL comment '错误提示',
-  `formtype` varchar(20) NOT NULL comment '显示格式',
+  `formtype` varchar(20) NOT NULL comment '显示格式字段类型',
   `setting` mediumtext NOT NULL,
   `formattribute` varchar(255) NOT NULL,
   `unsetgroupids` varchar(255) NOT NULL,
