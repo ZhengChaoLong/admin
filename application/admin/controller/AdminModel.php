@@ -93,7 +93,23 @@ class AdminModel extends Controller{
                 }
                 // 提交事务
                 Db::commit();
+                $modelSql = file_get_contents(APP_PATH.'common/fields/model.sql');
+                $tablePre = 
+                /*
+                //生成新的模型
+                $model_sql = file_get_contents(MODEL_PATH.'model.sql');
+                $tablepre = $this->db->db_tablepre;
+                $tablename = $_POST['info']['tablename'];
 
+                //新的模型
+                $model_sql = str_replace('$basic_table', $tablepre.$tablename, $model_sql);//模型表的信息
+                $model_sql = str_replace('$table_data',$tablepre.$tablename.'_data', $model_sql);//模型表的补充信息
+
+                //pc_model_field : 这张表的作用、如何关联的
+                $model_sql = str_replace('$table_model_field',$tablepre.'model_field', $model_sql);//存储模型表字段的数据表
+                $model_sql = str_replace('$modelid',$modelid,$model_sql);
+                $model_sql = str_replace('$siteid',$this->siteid,$model_sql);
+                */
                 return ajax_return_adv('添加成功');
             } catch (\Exception $e) {
                 // 回滚事务
