@@ -376,7 +376,9 @@ class Generate
     }
 
     /**
-     * 创建验证器
+     * @desc 创建验证器
+     * @param string $fileName 文件名称
+     * @param string $pathTemplate 路径模板
      * @return bool|int
      */
     private function buildValidate($fileName, $pathTemplate)
@@ -408,8 +410,10 @@ class Generate
     }
 
     /**
-     * 创建数据表
-     * @return bool|int
+     * @desc 创建数据表
+     * @param $tableName
+     * @return bool
+     * @throws Exception
      */
     private function buildTable($tableName)
     {

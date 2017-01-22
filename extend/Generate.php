@@ -1,7 +1,6 @@
 <?php
 /**
- * tpAdmin [a web admin based ThinkPHP5]
- *
+ * @desc 代码自动生成
  * @author    yuan1994 <tianpian0805@gmail.com>
  * @link      http://tpadmin.yuan1994.com/
  * @copyright 2016 yuan1994 all rights reserved.
@@ -56,6 +55,12 @@ class Generate
         'web_log_all',
     ];
 
+    /**
+     * @desc 执行创建函数
+     * @param array $data post相关数据
+     * @param string $option 生成文件选项
+     * @throws Exception
+     */
     public function run($data, $option = 'all')
     {
         // 检查方法是否存在
@@ -97,6 +102,7 @@ class Generate
         // 数据表表名
         $tableName = str_replace(DS, '_', $this->dir) . $this->nameLower;
 
+        //@TODO 仅对现有黑名单进行判断，对于后添加的控制器和表 没有查看是否已经存在
         // 判断是否在黑名单中
         if (in_array($data['controller'], $this->blacklistName)) {
             throw new Exception('该控制器不允许创建');
@@ -108,18 +114,19 @@ class Generate
         }
 
         // 创建目录
-        $dir_list = ["view" . DS . $this->dir . $this->nameLower];
+        $dir_list = ["view" . DS . $this->dir . $this->nameLower];//视图
         if (isset($data['model']) && $data['model']) {
-            $dir_list[] = "model" . DS . $this->dir;
+            $dir_list[] = "model" . DS . $this->dir;//模型
         }
         if (isset($data['validate']) && $data['validate']) {
-            $dir_list[] = "validate" . DS . $this->dir;
+            $dir_list[] = "validate" . DS . $this->dir;//验证器
         }
         if ($this->dir) {
-            $dir_list[] = "controller" . DS . $this->dir;
+            $dir_list[] = "controller" . DS . $this->dir;//控制器
         }
         $this->buildDir($dir_list);
 
+        //创建具体文件
         if ($action != 'buildDir') {
             // 文件路径
             $pathView = APP_PATH . $this->module . DS . "view" . DS . $this->dir . $this->nameLower . DS;
@@ -132,7 +139,8 @@ class Generate
     }
 
     /**
-     * 检查当前模块目录是否可写
+     * @desc 检查当前模块目录是否可写 通过写入内容进行测试
+     * @param string $path 路径
      * @return bool
      */
     public static function checkWritable($path = null)
@@ -147,7 +155,6 @@ class Generate
             }
             // 解除锁定
             unlink($testFile);
-
             return true;
         } catch (Exception $e) {
             return false;
