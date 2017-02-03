@@ -73,7 +73,9 @@ class Controller{
     }
 
     /**
-     * 自动搜索查询字段,给模型字段过滤
+     * @desc 自动搜索查询字段,给模型字段过滤
+     * @param obj $model 模型
+     * @return array
      */
     protected function search($model){
         $map = [];
@@ -83,7 +85,6 @@ class Controller{
                 $map[$key] = $val;
             }
         }
-
         return $map;
     }
 

@@ -6,9 +6,11 @@
  */
 namespace app\admin\controller;
 
+use think\Db;
 use app\admin\Controller;
 
 class AdminModel extends Controller{
+
     // 方法黑名单
     protected static $blacklist = [];
 
@@ -245,5 +247,65 @@ class AdminModel extends Controller{
         }
 
         return ajax_return_adv("清空回收站成功");
+    }
+
+    /**
+     * 创建模型
+     * 1、向模型表中插入一条数据
+     * 2、将默认字段添加到model_field表中
+     * 3、创建对应模型的数据表
+     * 4、创建模型的控制器、模型、视图文件
+     */
+    public function run(){
+
+        $controller = $this->request->controller();
+        $module = $this->request->module();
+        $data = $this->request->post();
+        unset($data['id']);
+
+        // 验证数据是否合法
+        if (class_exists(Loader::parseClass($module, 'validate', $controller))) {
+            $validate = Loader::validate($controller);
+            if (!$validate->check($data)) {
+                return ajax_return_adv_error($validate->getError());
+            }
+        }
+
+        // 写入数据
+        Db::startTrans();
+        try {
+            if (class_exists(Loader::parseClass($module, 'model', $controller))) {
+                //使用模型写入，可以在模型中定义更高级的操作
+                $model = Loader::model($controller);
+                $model->save($data);
+            } else {
+                // 简单的直接使用db写入
+                $model = Db::name($this->parseTable($controller));
+                $model->insert($data);
+            }
+            // 提交事务
+            Db::commit();
+
+            $modelSql = file_get_contents(APP_PATH.'common/fields/model.sql');
+            $tablePre = Config::get("database.prefix");
+            $tableName = $data['tablename'];
+
+            //新的模型
+            $modelSql = str_replace('$basic_table', $tablePre.$tableName, $modelSql);//模型表的信息
+
+            //存储模型表字段的数据表
+            $modelSql = str_replace('$table_model_field',$tablePre.'admin_model_field', $modelSql);
+            $modelSql = str_replace('$modelid',$modelid,$modelSql);
+
+            return ajax_return_adv('添加成功');
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            return ajax_return_adv_error($e->getMessage());
+        }
+        //创建模型所需要的控制器、模型、验证等文件
+        $model = new \Model();
+        $model->run($data);
+        return ajax_return_adv('生成成功', '', false, '', '', ['action' => Url::build($data['controller'] . '/index')]);
     }
 }
