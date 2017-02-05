@@ -7,6 +7,7 @@
 namespace app\admin\controller;
 
 use think\Db;
+use think\Loader;
 use app\admin\Controller;
 
 class AdminModel extends Controller{
@@ -95,18 +96,6 @@ class AdminModel extends Controller{
                 }
                 // 提交事务
                 Db::commit();
-
-                $modelSql = file_get_contents(APP_PATH.'common/fields/model.sql');
-                $tablePre = Config::get("database.prefix");
-                $tableName = $_POST['tablename'];
-
-                //新的模型
-                $modelSql = str_replace('$basic_table', $tablePre.$tableName, $modelSql);//模型表的信息
-
-                //存储模型表字段的数据表
-                $modelSql = str_replace('$table_model_field',$tablePre.'admin_model_field', $modelSql);
-                $modelSql = str_replace('$modelid',$modelid,$modelSql);
-                
                 return ajax_return_adv('添加成功');
             } catch (\Exception $e) {
                 // 回滚事务
@@ -270,7 +259,12 @@ class AdminModel extends Controller{
                 return ajax_return_adv_error($validate->getError());
             }
         }
-
+        //验证数据表是否已经存在
+        $tableName = Config::get("database.prefix") . $data['tablename'];
+        $ret = Db::query("SHOW TABLES LIKE '{$tableName}'");
+        if ($ret && isset($ret[0])) {
+            return ajax_return_adv_error('数据表已经存在');
+        }
         // 写入数据
         Db::startTrans();
         try {

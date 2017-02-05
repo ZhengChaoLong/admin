@@ -71,10 +71,12 @@ CREATE TABLE IF NOT EXISTS `zy_admin_model` (
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='模型';
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='模型';
 
--- 正在导出表  zyadmin.zy_admin_model 的数据：0 rows
+-- 正在导出表  zyadmin.zy_admin_model 的数据：1 rows
 /*!40000 ALTER TABLE `zy_admin_model` DISABLE KEYS */;
+INSERT INTO `zy_admin_model` (`id`, `name`, `description`, `tablename`, `disabled`, `addtime`, `sort`, `status`, `isdelete`, `create_time`, `update_time`) VALUES
+	(1, 'ouyangjuntest', 'ouyangjuntest', 'ouyangjuntest', 0, 0, 0, 1, 0, 1486306451, 1486306451);
 /*!40000 ALTER TABLE `zy_admin_model` ENABLE KEYS */;
 
 -- 导出  表 zyadmin.zy_admin_model_field 结构
@@ -94,6 +96,7 @@ CREATE TABLE IF NOT EXISTS `zy_admin_model_field` (
   `setting` mediumtext NOT NULL COMMENT '字段属性数据库字段属性',
   `isunique` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否唯一',
   `disabled` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否使用',
+  `isdelete` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '删除状态，1-删除 | 0-正常',
   PRIMARY KEY (`id`),
   KEY `modelid` (`modelid`,`disabled`),
   KEY `field` (`field`,`modelid`)
@@ -276,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `zy_admin_user` (
 -- 正在导出表  zyadmin.zy_admin_user 的数据：2 rows
 /*!40000 ALTER TABLE `zy_admin_user` DISABLE KEYS */;
 INSERT INTO `zy_admin_user` (`id`, `account`, `realname`, `password`, `last_login_time`, `last_login_ip`, `login_count`, `email`, `mobile`, `remark`, `status`, `isdelete`, `create_time`, `update_time`) VALUES
-	(1, 'admin', '超级管理员', '670b14728ad9902aecba32e22fa4f6bd', 1484994587, '127.0.0.1', 336, 'tianpian0805@gmail.com', '13121126169', '我是超级管理员', 1, 0, 1222907803, 1451033528),
+	(1, 'admin', '超级管理员', '670b14728ad9902aecba32e22fa4f6bd', 1486276192, '127.0.0.1', 337, 'tianpian0805@gmail.com', '13121126169', '我是超级管理员', 1, 0, 1222907803, 1451033528),
 	(2, 'demo', '测试', 'e10adc3949ba59abbe56e057f20f883e', 1477404006, '127.0.0.1', 2, '', '', '', 1, 0, 1476777133, 1477399793);
 /*!40000 ALTER TABLE `zy_admin_user` ENABLE KEYS */;
 
@@ -310,7 +313,7 @@ CREATE TABLE IF NOT EXISTS `zy_login_log` (
   `login_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`)
-) ENGINE=InnoDB AUTO_INCREMENT=665 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=666 DEFAULT CHARSET=utf8;
 
 -- 正在导出表  zyadmin.zy_login_log 的数据：~659 rows (大约)
 /*!40000 ALTER TABLE `zy_login_log` DISABLE KEYS */;
@@ -978,7 +981,8 @@ INSERT INTO `zy_login_log` (`id`, `uid`, `login_ip`, `login_location`, `login_br
 	(661, 1, '127.0.0.1', '本机地址 本机地址  ', 'Chrome(54.0.2840.71)', 'Windows 7', '2017-01-07 12:44:13'),
 	(662, 1, '127.0.0.1', '本机地址 本机地址  ', 'Chrome(45.0.2454.101)', 'Windows 7', '2017-01-07 12:45:01'),
 	(663, 1, '127.0.0.1', '本机地址 本机地址  ', 'Chrome(45.0.2454.101)', 'Windows 7', '2017-01-10 07:54:00'),
-	(664, 1, '127.0.0.1', '本机地址 本机地址  ', 'Chrome(54.0.2840.71)', 'Windows 7', '2017-01-21 18:29:47');
+	(664, 1, '127.0.0.1', '本机地址 本机地址  ', 'Chrome(54.0.2840.71)', 'Windows 7', '2017-01-21 18:29:47'),
+	(665, 1, '127.0.0.1', '本机地址 本机地址  ', 'Chrome(54.0.2840.71)', 'Windows 7', '2017-02-05 14:29:52');
 /*!40000 ALTER TABLE `zy_login_log` ENABLE KEYS */;
 
 -- 导出  表 zyadmin.zy_node_map 结构
@@ -1131,9 +1135,9 @@ CREATE TABLE IF NOT EXISTS `zy_web_log_001` (
   KEY `ip` (`ip`),
   KEY `map` (`map`),
   KEY `otime` (`otime`)
-) ENGINE=MyISAM AUTO_INCREMENT=96 DEFAULT CHARSET=utf8 COMMENT='网站日志';
+) ENGINE=MyISAM AUTO_INCREMENT=145 DEFAULT CHARSET=utf8 COMMENT='网站日志';
 
--- 正在导出表  zyadmin.zy_web_log_001 的数据：95 rows
+-- 正在导出表  zyadmin.zy_web_log_001 的数据：142 rows
 /*!40000 ALTER TABLE `zy_web_log_001` DISABLE KEYS */;
 INSERT INTO `zy_web_log_001` (`id`, `uid`, `ip`, `location`, `os`, `browser`, `url`, `module`, `map`, `is_ajax`, `data`, `otime`) VALUES
 	(1, 0, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/public/index.php/admin/pub/login.html', 'admin', 'Pub\\login', 0, 'a:0:{}', 1482629922),
@@ -1230,7 +1234,56 @@ INSERT INTO `zy_web_log_001` (`id`, `uid`, `ip`, `location`, `os`, `browser`, `u
 	(92, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1485001953),
 	(93, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html?', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1485001955),
 	(94, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1485006148),
-	(95, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/add.html', 'admin', 'AdminModel\\add', 0, 'a:0:{}', 1485006149);
+	(95, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/add.html', 'admin', 'AdminModel\\add', 0, 'a:0:{}', 1485006149),
+	(96, 0, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/pub/login.html', 'admin', 'Pub\\login', 0, 'a:0:{}', 1486276182),
+	(97, 0, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/pub/checklogin.html', 'admin', 'Pub\\checklogin', 1, 'a:3:{s:7:"account";s:5:"admin";s:8:"password";s:6:"000000";s:7:"captcha";s:4:"nhs2";}', 1486276191),
+	(98, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486276195),
+	(99, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/generate/index.html', 'admin', 'Generate\\index', 0, 'a:0:{}', 1486276208),
+	(100, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/generate/index.html', 'admin', 'Generate\\index', 0, 'a:0:{}', 1486276225),
+	(101, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/generate/index.html', 'admin', 'Generate\\index', 0, 'a:0:{}', 1486276234),
+	(102, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486280385),
+	(103, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/add.html', 'admin', 'AdminModel\\add', 0, 'a:0:{}', 1486280390),
+	(104, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/add.html', 'admin', 'AdminModel\\add', 0, 'a:0:{}', 1486280392),
+	(105, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/recyclebin.html', 'admin', 'AdminModel\\recyclebin', 0, 'a:0:{}', 1486286615),
+	(106, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486286670),
+	(107, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486286672),
+	(108, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486286672),
+	(109, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/delete.html', 'admin', 'AdminModel\\delete', 1, 'a:1:{s:2:"id";s:0:"";}', 1486286677),
+	(110, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486286677),
+	(111, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/resume.html', 'admin', 'AdminModel\\resume', 1, 'a:1:{s:2:"id";s:0:"";}', 1486286681),
+	(112, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486286681),
+	(113, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/forbid.html', 'admin', 'AdminModel\\forbid', 1, 'a:1:{s:2:"id";s:0:"";}', 1486286684),
+	(114, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486286684),
+	(115, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/add.html', 'admin', 'AdminModel\\add', 0, 'a:0:{}', 1486286686),
+	(116, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/add.html', 'admin', 'AdminModel\\add', 0, 'a:0:{}', 1486306299),
+	(117, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/add.html', 'admin', 'AdminModel\\add', 1, 'a:4:{s:2:"id";s:0:"";s:4:"name";s:13:"ouyangjuntest";s:9:"tablename";s:13:"ouyangjuntest";s:11:"description";s:13:"ouyangjuntest";}', 1486306325),
+	(118, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/add.html', 'admin', 'AdminModel\\add', 1, 'a:4:{s:2:"id";s:0:"";s:4:"name";s:13:"ouyangjuntest";s:9:"tablename";s:13:"ouyangjuntest";s:11:"description";s:13:"ouyangjuntest";}', 1486306351),
+	(119, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486306433),
+	(120, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486306439),
+	(121, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/add.html', 'admin', 'AdminModel\\add', 0, 'a:0:{}', 1486306440),
+	(122, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/add.html', 'admin', 'AdminModel\\add', 1, 'a:4:{s:2:"id";s:0:"";s:4:"name";s:13:"ouyangjuntest";s:9:"tablename";s:13:"ouyangjuntest";s:11:"description";s:13:"ouyangjuntest";}', 1486306451),
+	(123, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486306451),
+	(124, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/edit/id/1.html', 'admin', 'AdminModel\\edit', 0, 'a:1:{s:2:"id";s:1:"1";}', 1486306456),
+	(125, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/edit/id/1.html', 'admin', 'AdminModel\\edit', 0, 'a:1:{s:2:"id";s:1:"1";}', 1486306460),
+	(126, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_group/index.html', 'admin', 'AdminGroup\\index', 0, 'a:0:{}', 1486306711),
+	(127, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486306714),
+	(128, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_group/index.html', 'admin', 'AdminGroup\\index', 0, 'a:0:{}', 1486306718),
+	(129, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_node/index.html', 'admin', 'AdminNode\\index', 0, 'a:0:{}', 1486306724),
+	(130, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_role/index.html', 'admin', 'AdminRole\\index', 0, 'a:0:{}', 1486306727),
+	(131, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_user/index.html', 'admin', 'AdminUser\\index', 0, 'a:0:{}', 1486306728),
+	(132, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/node_map/index.html', 'admin', 'NodeMap\\index', 0, 'a:0:{}', 1486306730),
+	(133, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/web_log/index.html', 'admin', 'WebLog\\index', 0, 'a:0:{}', 1486306733),
+	(134, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/login_log/index.html', 'admin', 'LoginLog\\index', 0, 'a:0:{}', 1486306734),
+	(135, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/generate/index.html', 'admin', 'Generate\\index', 0, 'a:0:{}', 1486306917),
+	(136, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/generate/index.html?table=zy_admin_model_field', 'admin', 'Generate\\index', 0, 'a:1:{s:5:"table";s:20:"zy_admin_model_field";}', 1486306929),
+	(137, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/generate/run.html', 'admin', 'Generate\\run', 1, 'a:7:{s:4:"file";s:3:"all";s:6:"module";s:5:"admin";s:10:"controller";s:15:"AdminModelField";s:5:"title";s:0:"";s:4:"form";a:11:{i:3;a:7:{s:5:"title";s:9:"字段名";s:4:"name";s:5:"field";s:4:"type";s:4:"text";s:6:"option";s:0:"";s:7:"default";s:0:"";s:11:"search_type";s:4:"text";s:8:"validate";a:3:{s:8:"datatype";s:0:"";s:7:"nullmsg";s:0:"";s:8:"errormsg";s:0:"";}}i:4;a:7:{s:5:"title";s:12:"字段说明";s:4:"name";s:4:"name";s:4:"type";s:4:"text";s:6:"option";s:0:"";s:7:"default";s:0:"";s:11:"search_type";s:4:"text";s:8:"validate";a:3:{s:8:"datatype";s:0:"";s:7:"nullmsg";s:0:"";s:8:"errormsg";s:0:"";}}i:5;a:7:{s:5:"title";s:12:"字段提示";s:4:"name";s:4:"tips";s:4:"type";s:8:"textarea";s:6:"option";s:0:"";s:7:"default";s:0:"";s:11:"search_type";s:4:"text";s:8:"validate";a:3:{s:8:"datatype";s:0:"";s:7:"nullmsg";s:0:"";s:8:"errormsg";s:0:"";}}i:6;a:7:{s:5:"title";s:15:"表单样式名";s:4:"name";s:3:"css";s:4:"type";s:4:"text";s:6:"option";s:0:"";s:7:"default";s:0:"";s:11:"search_type";s:4:"text";s:8:"validate";a:3:{s:8:"datatype";s:0:"";s:7:"nullmsg";s:0:"";s:8:"errormsg";s:0:"";}}i:7;a:7:{s:5:"title";s:36:"字符串长度取值范围最小值";s:4:"name";s:9:"minlength";s:4:"type";s:4:"text";s:6:"option";s:0:"";s:7:"default";s:0:"";s:11:"search_type";s:4:"text";s:8:"validate";a:3:{s:8:"datatype";s:0:"";s:7:"nullmsg";s:0:"";s:8:"errormsg";s:0:"";}}i:8;a:7:{s:5:"title";s:36:"字符串长度取值范围最大致";s:4:"name";s:9:"maxlength";s:4:"type";s:4:"text";s:6:"option";s:0:"";s:7:"default";s:0:"";s:11:"search_type";s:4:"text";s:8:"validate";a:3:{s:8:"datatype";s:0:"";s:7:"nullmsg";s:0:"";s:8:"errormsg";s:0:"";}}i:9;a:7:{s:5:"title";s:18:"数据校验规则";s:4:"name";s:7:"pattern";s:4:"type";s:4:"text";s:6:"option";s:0:"";s:7:"default";s:0:"";s:11:"search_type";s:4:"text";s:8:"validate";a:3:{s:8:"datatype";s:0:"";s:7:"nullmsg";s:0:"";s:8:"errormsg";s:0:"";}}i:10;a:7:{s:5:"title";s:12:"错误提示";s:4:"name";s:9:"errortips";s:4:"type";s:4:"text";s:6:"option";s:0:"";s:7:"default";s:0:"";s:11:"search_type";s:4:"text";s:8:"validate";a:3:{s:8:"datatype";s:0:"";s:7:"nullmsg";s:0:"";s:8:"errormsg";s:0:"";}}i:11;a:7:{s:5:"title";s:12:"字段类型";s:4:"name";s:8:"formtype";s:4:"type";s:6:"select";s:6:"option";s:0:"";s:7:"default";s:0:"";s:11:"search_type";s:4:"text";s:8:"validate";a:3:{s:8:"datatype";s:0:"";s:7:"nullmsg";s:0:"";s:8:"errormsg";s:0:"";}}i:13;a:7:{s:5:"title";s:9:"值唯一";s:4:"name";s:8:"isunique";s:4:"type";s:5:"radio";s:6:"option";s:0:"";s:7:"default";s:0:"";s:11:"search_type";s:4:"text";s:8:"validate";a:3:{s:8:"datatype";s:0:"";s:7:"nullmsg";s:0:"";s:8:"errormsg";s:0:"";}}i:14;a:7:{s:5:"title";s:12:"是否可用";s:4:"name";s:8:"disabled";s:4:"type";s:5:"radio";s:6:"option";s:0:"";s:7:"default";s:0:"";s:11:"search_type";s:4:"text";s:8:"validate";a:3:{s:8:"datatype";s:0:"";s:7:"nullmsg";s:0:"";s:8:"errormsg";s:0:"";}}}s:4:"menu";a:5:{i:0;s:3:"add";i:1;s:6:"forbid";i:2;s:6:"resume";i:3;s:6:"delete";i:4;s:10:"recycleBin";}s:5:"model";s:1:"1";}', 1486307358),
+	(138, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/generate/index.html?table=zy_admin_model_field', 'admin', 'Generate\\index', 0, 'a:1:{s:5:"table";s:20:"zy_admin_model_field";}', 1486307368),
+	(139, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486307396),
+	(140, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486307409),
+	(141, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model/index.html', 'admin', 'AdminModel\\index', 0, 'a:0:{}', 1486307417),
+	(142, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model_field/index.html', 'admin', 'AdminModelField\\index', 0, 'a:0:{}', 1486307431),
+	(143, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model_field/index.html', 'admin', 'AdminModelField\\index', 0, 'a:0:{}', 1486307517),
+	(144, 1, '127.0.0.1', '本机地址 本机地址  ', 'Windows 7', 'Chrome(54.0.2840.71)', '/admin/index.php/admin/admin_model_field/add.html', 'admin', 'AdminModelField\\add', 0, 'a:0:{}', 1486307530);
 /*!40000 ALTER TABLE `zy_web_log_001` ENABLE KEYS */;
 
 -- 导出  表 zyadmin.zy_web_log_all 结构

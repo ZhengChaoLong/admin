@@ -74,7 +74,7 @@ class Model
         }
 
         $this->data = $data;
-        $this->module = 'admin';//模块
+        $this->module = $data['module'];
         $this->name = ucfirst(strtolower($data['tablename']));//控制器
         $this->nameLower = Loader::parseName($this->name);//视图
 
@@ -143,21 +143,19 @@ class Model
     private function buildAll($pathView, $pathTemplate, $fileName, $tableName, $code, $data)
     {
         // 创建文件
-        $this->buildIndex($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
+        $this->buildIndex($pathView, $pathTemplate, $code);//index.html文件
 
         if (isset($data['menu']) && in_array('recyclebin', $data['menu'])) {
-            $this->buildForm($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
-            $this->buildTh($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
-            $this->buildTd($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
-            $this->buildRecycleBin($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
+            $this->buildTh($pathView, $code);
+            $this->buildTd($pathView, $code);
         }
-        $this->buildEdit($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
-        $this->buildController($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
+        $this->buildEdit($pathView, $pathTemplate, $code);
+        $this->buildController($pathTemplate, $fileName, $code);
         if (isset($data['validate']) && $data['validate']) {
-            $this->buildValidate($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
+            $this->buildValidate($pathTemplate, $fileName, $code);
         }
         if (isset($data['model']) && $data['model']) {
-            $this->buildModel($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
+            $this->buildModel($pathTemplate, $fileName,$code);
         }
         if (isset($data['create_table']) && $data['create_table']) {
             $this->buildTable($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
@@ -183,9 +181,13 @@ class Model
     }
 
     /**
-     * 创建 edit.html 文件
+     * @desc 创建 edit.html 文件
+     * @param string $path 路径
+     * @param string $pathTemplate 模板
+     * @param array $code 模板数据
+     * @return int
      */
-    private function buildEdit($path, $pathTemplate, $fileName, $tableName, $code, $data)
+    private function buildEdit($path, $pathTemplate, $code)
     {
         $template = file_get_contents($pathTemplate . "edit.tpl");
         $file = $path . "edit.html";
@@ -197,20 +199,12 @@ class Model
     }
 
     /**
-     * 创建form.html文件
+     * @desc 创建th.html文件
+     * @param string $path 创建文件的路径
+     * @param array $code 模板详细内容
+     * @return int
      */
-    private function buildForm($path, $pathTemplate, $fileName, $tableName, $code, $data)
-    {
-        $content = implode("\n", $code['search']);
-        $file = $path . "form.html";
-
-        return file_put_contents($file, $content);
-    }
-
-    /**
-     * 创建th.html文件
-     */
-    private function buildTh($path, $pathTemplate, $fileName, $tableName, $code, $data)
+    private function buildTh($path, $code)
     {
         $content = implode("\n", $code['th']);
         $file = $path . "th.html";
@@ -219,9 +213,12 @@ class Model
     }
 
     /**
-     * 创建td.html文件
+     * @desc 创建td.html文件
+     * @param string $path 创建文件的路径
+     * @param array $code 模板的详细内容
+     * @return int
      */
-    private function buildTd($path, $pathTemplate, $fileName, $tableName, $code, $data)
+    private function buildTd($path, $code)
     {
         $content = implode("\n", $code['td']);
         $file = $path . "td.html";
@@ -230,38 +227,12 @@ class Model
     }
 
     /**
-     * 创建 recyclebin.html 文件
-     */
-    private function buildRecycleBin($path, $pathTemplate, $fileName, $tableName, $code, $data)
-    {
-        // 首页菜单选择了回收站才创建回收站
-        $file = $path . "recyclebin.html";
-
-        $content = '{extend name="template/recyclebin" /}';
-        if ($code['search_selected']) {
-            $content .= "\n" . '{block name="script"}' . implode("", $code['script_search']) . "\n"
-                . '<script>' . "\n"
-                . tab(1) . '$(function () {' . "\n"
-                . $code['search_selected']
-                . tab(1) . '})' . "\n"
-                . '</script>' . "\n"
-                . '{/block}' . "\n";
-        }
-
-        // 默认直接继承模板
-        return file_put_contents($file, $content);
-    }
-
-    /**
      * @param string $path 路径
      * @param string $pathTemplate 模板
-     * @param string $fileName 文件名称
-     * @param string $tableName 表名
      * @param array $code 表单数据
-     * @param array $data form相关数据
      * @return int
      */
-    private function buildIndex($path, $pathTemplate, $fileName, $tableName, $code, $data)
+    private function buildIndex($path, $pathTemplate, $code)
     {
         $script = '';
         // 菜单全选的默认直接继承模板
@@ -300,9 +271,13 @@ class Model
     }
 
     /**
-     * 创建控制器文件
+     * @desc 创建控制器文件
+     * @param string $pathTemplate 模板路径
+     * @param string $fileName 目标控制器名称
+     * @param array $code 控制器相关数据
+     * @return int
      */
-    private function buildController($path, $pathTemplate, $fileName, $tableName, $code, $data)
+    private function buildController($pathTemplate, $fileName, $code)
     {
         $template = file_get_contents($pathTemplate . "Controller.tpl");
         $file = str_replace('%NAME%', 'controller', $fileName);
@@ -316,9 +291,13 @@ class Model
     }
 
     /**
-     * 创建模型文件
+     * @desc 创建模型文件
+     * @param string $pathTemplate 模板位置
+     * @param string $fileName 生成的model名称
+     * @param array $code model所需要的参数
+     * @return int
      */
-    private function buildModel($path, $pathTemplate, $fileName, $tableName, $code, $data)
+    private function buildModel($pathTemplate, $fileName, $code)
     {
         // 直接生成空模板
         $template = file_get_contents($pathTemplate . "Model.tpl");
@@ -338,9 +317,13 @@ class Model
     }
 
     /**
-     * 创建验证器
+     * @desc 创建验证器
+     * @param string $pathTemplate 模板名称
+     * @param string $fileName 验证器文件
+     * @param array $code 验证器具体数据
+     * @return int
      */
-    private function buildValidate($path, $pathTemplate, $fileName, $tableName, $code, $data)
+    private function buildValidate($pathTemplate, $fileName, $code)
     {
         $template = file_get_contents($pathTemplate . "Validate.tpl");
         $file = str_replace('%NAME%', 'validate', $fileName);
@@ -354,9 +337,12 @@ class Model
     }
 
     /**
-     * 创建数据表
+     * @desc 创建数据表
+     * @param string $tableName 数据表名称
+     * @return bool
+     * @throws Exception
      */
-    private function buildTable($path, $pathTemplate, $fileName, $tableName, $code, $data)
+    private function buildTable($tableName)
     {
         // 一定别忘记表名前缀
         $tableName = isset($this->data['table_name']) && $this->data['table_name'] ?
@@ -370,10 +356,13 @@ class Model
         // 表存在
         if ($ret && isset($ret[0])) {
             //不是强制建表但表存在时直接return
+            /*
             if (!isset($this->data['create_table_force']) || !$this->data['create_table_force']) {
                 return true;
             }
             Db::execute("RENAME TABLE {$tableName} to {$tableName}_build_bak");
+            */
+            //@TODO return 表存在的情况应该直接return
             $tableExist = true;
         }
         $auto_create_field = ['id', 'status', 'isdelete', 'create_time', 'update_time'];
