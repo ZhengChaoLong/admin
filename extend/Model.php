@@ -154,7 +154,7 @@ class Model
             $this->buildValidate($pathTemplate, $fileName, $code);
         }
         if (isset($data['model']) && $data['model']) {
-            $this->buildModel($pathTemplate, $fileName,$code);
+            $this->buildModel($pathTemplate, $fileName,$tableName);
         }
         if (isset($data['create_table']) && $data['create_table']) {
             $this->buildTable($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
@@ -166,7 +166,8 @@ class Model
     }
 
     /**
-     * 创建目录
+     * @desc 创建目录
+     * @param array $dir_list 需要创建的目录列表
      */
     private function buildDir($dir_list)
     {
@@ -247,7 +248,6 @@ class Model
         $tdMenu .= tab(4) . '{tp:menu menu=\'sedit\' /}' . "\n";
         // 有回收站
         if (in_array('recyclebin', $menuArr)) {
-            $form = '{include file="form" /}';
             $th = '{include file="th" /}';
             $td = '{include file="td" /}';
             $tdMenu .= tab(4) . '{tp:menu menu=\'sdelete\' /}';
@@ -262,7 +262,7 @@ class Model
 
         return file_put_contents($file, str_replace(
                 ["[FORM]", "[MENU]", "[TH]", "[TD]", "[TD_MENU]", "[SCRIPT]"],
-                [$form, $menu, $th, $td, $tdMenu, $script],
+                [$menu, $th, $td, $tdMenu, $script],
                 $template
             )
         );
@@ -282,7 +282,7 @@ class Model
 
         return file_put_contents($file, str_replace(
                 ["[TITLE]", "[NAME]", "[FILTER]", "[NAMESPACE]"],
-                [$this->data['title'], $this->name, $code['filter'], $this->namespaceSuffix],
+                [$this->data['name'], $this->name, $code['filter'], $this->namespaceSuffix],
                 $template
             )
         );
@@ -292,10 +292,10 @@ class Model
      * @desc 创建模型文件
      * @param string $pathTemplate 模板位置
      * @param string $fileName 生成的model名称
-     * @param array $code model所需要的参数
+     * @param string $tableName 数据表名称
      * @return int
      */
-    private function buildModel($pathTemplate, $fileName, $code)
+    private function buildModel($pathTemplate, $fileName,$tableName)
     {
         // 直接生成空模板
         $template = file_get_contents($pathTemplate . "Model.tpl");
@@ -308,7 +308,7 @@ class Model
 
         return file_put_contents($file, str_replace(
                 ["[TITLE]", "[NAME]", "[NAMESPACE]", "[TABLE]", "[AUTO_TIMESTAMP]"],
-                [$this->data['title'], $this->name, $this->namespaceSuffix, $tableName, $autoTimestamp],
+                [$this->data['name'], $this->name, $this->namespaceSuffix, $tableName, $autoTimestamp],
                 $template
             )
         );
@@ -328,7 +328,7 @@ class Model
 
         return file_put_contents($file, str_replace(
                 ["[TITLE]", "[NAME]", "[NAMESPACE]", "[RULE]"],
-                [$this->data['title'], $this->name, $this->namespaceSuffix, $code['validate']],
+                [$this->data['name'], $this->name, $this->namespaceSuffix, $code['validate']],
                 $template
             )
         );
@@ -368,7 +368,7 @@ class Model
         $fieldAttr = [];
         $key = [];
         if (in_array('id', $auto_create_field)) {
-            $fieldAttr[] = tab(1) . "`id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '{$this->data['title']}主键'";
+            $fieldAttr[] = tab(1) . "`id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '{$this->data['name']}主键'";
         }
         foreach ($this->data['field'] as $field) {
             if (!in_array($field['name'], $auto_create_field)) {
@@ -414,7 +414,7 @@ class Model
         $sql_create = "CREATE TABLE `{$tableName}` (\n"
             . implode(",\n", array_merge($fieldAttr, $key))
             . "\n)ENGINE=" . (isset($this->data['table_engine']) ? $this->data['table_engine'] : 'InnoDB')
-            . " DEFAULT CHARSET=utf8 COMMENT '{$this->data['title']}'";
+            . " DEFAULT CHARSET=utf8 COMMENT '{$this->data['name']}'";
 
         // 写入执行的SQL到日志中，如果不是想要的表结构，请到日志中搜索BUILD_SQL，找到执行的SQL到数据库GUI软件中修改执行，修改表结构
         Log::write("BUILD_SQL：\n{$sql_drop};\n{$sql_create};", Log::SQL);
@@ -441,7 +441,6 @@ class Model
         $content = '<?php' . "\n\n"
             . 'return ' . var_export($data, true) . ";\n";
         $file = $path . "config.php";
-
         return file_put_contents($file, $content);
     }
 
@@ -456,7 +455,6 @@ class Model
      * 'edit'            => $editField,
      * 'set_checked'     => $setChecked,
      * 'set_selected'    => $setSelected,
-     * 'search_selected' => $searchSelected,
      * 'filter'          => $filter,
      * 'validate'        => $validate,
      * ];
@@ -473,14 +471,11 @@ class Model
         $setChecked = [];
         // select类型的表单控件编辑状态使用javascript赋值
         $setSelected = [];
-        // 搜索时被选中的值
-        $searchSelected = '';
         // 控制器过滤器
         $filter = '';
         // 生成验证器文件的代码
         $validate = '';
         // DatePicker脚本引入
-        $scriptSearch = [];
         $scriptEdit = [];
         //添加的字段
         if (isset($this->data['form']) && $this->data['form']) {
@@ -618,11 +613,9 @@ class Model
             'edit'            => $editField,
             'set_checked'     => $setChecked,
             'set_selected'    => $setSelected,
-            'search_selected' => $searchSelected,
             'filter'          => $filter,
             'validate'        => $validate,
             'script_edit'     => $scriptEdit,
-            'script_search'   => $scriptSearch,
         ];
     }
 
