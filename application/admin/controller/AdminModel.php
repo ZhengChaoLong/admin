@@ -264,22 +264,16 @@ class AdminModel extends Controller{
         if ($ret && isset($ret[0])) {
             return ajax_return_adv_error('数据表已经存在');
         }
-        // 写入数据
+        // 写入数据 创建事务
         Db::startTrans();
         try {
-            $modelId = 0;
-            if (class_exists(Loader::parseClass($module, 'model', $controller))) {
-                //使用模型写入，可以在模型中定义更高级的操作
-                $model = Loader::model($controller);
-                $model->save($data);
-                $modelId = $model->getLastInsID();//获取子增主键值
-            } else {
-                // 简单的直接使用db写入
-                $model = Db::name($this->parseTable($controller));
-                $model->insert($data);
-                $modelId = $model->getLastInsID();
-            }
+            //模型写入
+            $model = Loader::model($controller);
+            $model->save($data);
+            //获取自增主键
+            $modelId = $model->getLastInsID();
 
+            //获取model.sql(默认模型sql、模型字段)
             $modelSql = file_get_contents(APP_PATH.'common/fields/model.sql');
             $tablePre = Config::get("database.prefix");
 
@@ -289,6 +283,8 @@ class AdminModel extends Controller{
             //存储模型表字段的数据表
             $modelSql = str_replace('$table_model_field', $tablePre.'admin_model_field', $modelSql);
             $modelSql = str_replace('$model_id', $modelId, $modelSql);
+
+            //执行创建的sql语句
             Db::execute($modelSql);
             //创建模型所需要的控制器、模型、验证等文件
             $model = new \Model();

@@ -15,7 +15,6 @@ class Model
 {
     private $module;
     private $name;
-    private $dir;
     private $namespaceSuffix;
     private $nameLower;
     private $data;
@@ -75,7 +74,7 @@ class Model
 
         $this->data = $data;
         $this->module = $data['module'];
-        $this->name = ucfirst(strtolower($data['tablename']));//控制器
+        $this->name = $data['tablename'];//控制器
         $this->nameLower = Loader::parseName($this->name);//视图
 
         // 数据表表名
