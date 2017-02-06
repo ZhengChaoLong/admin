@@ -144,7 +144,7 @@ class Model
         // 创建文件
         $this->buildIndex($pathView, $pathTemplate, $code);//index.html文件
 
-        if (isset($data['menu']) && in_array('recyclebin', $data['menu'])) {
+        if (isset($data['menu'])) {
             $this->buildTh($pathView, $code);
             $this->buildTd($pathView, $code);
         }
@@ -153,16 +153,7 @@ class Model
         if (isset($data['validate']) && $data['validate']) {
             $this->buildValidate($pathTemplate, $fileName, $code);
         }
-        if (isset($data['model']) && $data['model']) {
-            $this->buildModel($pathTemplate, $fileName,$tableName);
-        }
-        if (isset($data['create_table']) && $data['create_table']) {
-            $this->buildTable($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
-        }
-        // 建立配置文件
-        if (isset($data['create_config']) && $data['create_config']) {
-            $this->buildConfig($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
-        }
+        $this->buildModel($pathTemplate, $fileName,$tableName);
     }
 
     /**
@@ -307,8 +298,8 @@ class Model
         }
 
         return file_put_contents($file, str_replace(
-                ["[TITLE]", "[NAME]", "[NAMESPACE]", "[TABLE]", "[AUTO_TIMESTAMP]"],
-                [$this->data['name'], $this->name, $this->namespaceSuffix, $tableName, $autoTimestamp],
+                ["[NAME]", "[NAMESPACE]", "[TABLE]", "[AUTO_TIMESTAMP]"],
+                [$this->name, $this->namespaceSuffix, $tableName, $autoTimestamp],
                 $template
             )
         );
@@ -333,117 +324,6 @@ class Model
             )
         );
     }
-
-    /**
-     * @desc 创建数据表
-     * @param string $tableName 数据表名称
-     * @return bool
-     * @throws Exception
-     */
-    private function buildTable($tableName)
-    {
-        // 一定别忘记表名前缀
-        $tableName = isset($this->data['table_name']) && $this->data['table_name'] ?
-            $this->data['table_name'] :
-            Config::get("database.prefix") . $tableName;
-        // 在 MySQL 中，DROP TABLE 语句自动提交事务，因此在此事务内的任何更改都不会被回滚，不能使用事务
-        // http://php.net/manual/zh/pdo.rollback.php
-        $tableExist = false;
-        // 判断表是否存在
-        $ret = Db::query("SHOW TABLES LIKE '{$tableName}'");
-        // 表存在
-        if ($ret && isset($ret[0])) {
-            //不是强制建表但表存在时直接return
-            /*
-            if (!isset($this->data['create_table_force']) || !$this->data['create_table_force']) {
-                return true;
-            }
-            Db::execute("RENAME TABLE {$tableName} to {$tableName}_build_bak");
-            */
-            //@TODO return 表存在的情况应该直接return
-            $tableExist = true;
-        }
-        $auto_create_field = ['id', 'status', 'isdelete', 'create_time', 'update_time'];
-        // 强制建表和不存在原表执行建表操作
-        $fieldAttr = [];
-        $key = [];
-        if (in_array('id', $auto_create_field)) {
-            $fieldAttr[] = tab(1) . "`id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '{$this->data['name']}主键'";
-        }
-        foreach ($this->data['field'] as $field) {
-            if (!in_array($field['name'], $auto_create_field)) {
-                // 字段属性
-                $fieldAttr[] = tab(1) . "`{$field['name']}` {$field['type']}"
-                    . ($field['extra'] ? ' ' . $field['extra'] : '')
-                    . (isset($field['not_null']) && $field['not_null'] ? ' NOT NULL' : '')
-                    . (strtolower($field['default']) == 'null' ? '' : " DEFAULT '{$field['default']}'")
-                    . ($field['comment'] === '' ? '' : " COMMENT '{$field['comment']}'");
-            }
-            // 索引
-            if (isset($field['key']) && $field['key'] && $field['name'] != 'id') {
-                $key[] = tab(1) . "KEY `{$field['name']}` (`{$field['name']}`)";
-            }
-        }
-
-        if (isset($this->data['menu'])) {
-            // 自动生成status字段，防止resume,forbid方法报错，如果不需要请到数据库自己删除
-            if (in_array("resume", $this->data['menu']) || in_array("forbid", $this->data['menu'])) {
-                $fieldAttr[] = tab(1) . "`status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态，1-正常 | 0-禁用'";
-            }
-            // 自动生成 isdelete 软删除字段，防止 delete,recycle,deleteForever 方法报错，如果不需要请到数据库自己删除
-            if (in_array("delete", $this->data['menu']) || in_array("recyclebin", $this->data['menu'])) {
-                // 修改官方软件删除使用记录时间戳的方式，效率较低，改为枚举类型的 tinyint(1)，相应的traits见 thinkphp/library/traits/model/FakeDelete.php，使用方法和官方一样
-                // 软件删除详细介绍见：http://www.kancloud.cn/manual/thinkphp5/189658
-                $fieldAttr[] = tab(1) . "`isdelete` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '删除状态，1-删除 | 0-正常'";
-            }
-        }
-
-        // 如果创建模型则自动生成create_time，update_time字段
-        if (isset($this->data['auto_timestamp']) && $this->data['auto_timestamp']) {
-            // 自动生成 create_time 字段，相应自动生成的模型也开启自动写入create_time和update_time时间，并且将类型指定为int类型
-            // 时间戳使用方法见：http://www.kancloud.cn/manual/thinkphp5/138668
-            $fieldAttr[] = tab(1) . "`create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间'";
-            $fieldAttr[] = tab(1) . "`update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间'";
-        }
-        // 默认自动创建主键为id
-        $fieldAttr[] = tab(1) . "PRIMARY KEY (`id`)";
-
-        // 会删除之前的表，会清空数据，重新创建表，谨慎操作
-        $sql_drop = "DROP TABLE IF EXISTS `{$tableName}`";
-        // 默认字符编码为utf8，表引擎默认InnoDB，其他都是默认
-        $sql_create = "CREATE TABLE `{$tableName}` (\n"
-            . implode(",\n", array_merge($fieldAttr, $key))
-            . "\n)ENGINE=" . (isset($this->data['table_engine']) ? $this->data['table_engine'] : 'InnoDB')
-            . " DEFAULT CHARSET=utf8 COMMENT '{$this->data['name']}'";
-
-        // 写入执行的SQL到日志中，如果不是想要的表结构，请到日志中搜索BUILD_SQL，找到执行的SQL到数据库GUI软件中修改执行，修改表结构
-        Log::write("BUILD_SQL：\n{$sql_drop};\n{$sql_create};", Log::SQL);
-        // execute和query方法都不支持传入分号 (;)，不支持一次执行多条 SQL
-        try {
-            Db::execute($sql_drop);
-            Db::execute($sql_create);
-            Db::execute("DROP TABLE IF EXISTS `{$tableName}_build_bak`");
-        } catch (\Exception $e) {
-            // 模拟事务操作，滚回原表
-            if ($tableExist) {
-                Db::execute("RENAME TABLE {$tableName}_build_bak to {$tableName}");
-            }
-
-            throw new Exception($e->getMessage());
-        }
-    }
-
-    /**
-     * 创建配置文件
-     */
-    private function buildConfig($path, $pathTemplate, $fileName, $tableName, $code, $data)
-    {
-        $content = '<?php' . "\n\n"
-            . 'return ' . var_export($data, true) . ";\n";
-        $file = $path . "config.php";
-        return file_put_contents($file, $content);
-    }
-
 
     /**
      * 创建文件的代码
