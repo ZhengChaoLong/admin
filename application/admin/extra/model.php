@@ -18,7 +18,7 @@ return [
                 'errormsg' => '错误提示'
             ],
             'require' => '',
-            'type' => 'select',
+            'formtype' => 'select',
             'default' => '默认值',
             'option' => '',
         ],
@@ -31,7 +31,7 @@ return [
                 'errormsg' => '错误提示'
             ],
             'require' => '',
-            'type' => 'text',
+            'formtype' => 'text',
             'default' => '默认值',
             'option' => '',
         ],
@@ -44,7 +44,7 @@ return [
                 'errormsg' => '错误提示'
             ],
             'require' => '',
-            'type' => 'textarea',
+            'formtype' => 'textarea',
             'default' => '默认值',
             'option' => '',
         ],

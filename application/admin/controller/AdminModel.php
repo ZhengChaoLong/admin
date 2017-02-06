@@ -8,6 +8,7 @@ namespace app\admin\controller;
 
 use think\Db;
 use think\Loader;
+use think\Config;
 use app\admin\Controller;
 
 class AdminModel extends Controller{
@@ -63,7 +64,63 @@ class AdminModel extends Controller{
     public function add()
     {
         if ($this->request->isAjax()) {
-            $this->run();
+            $controller = $this->request->controller();
+            $module = $this->request->module();
+            $data = $this->request->post();
+            unset($data['id']);
+
+            // 验证数据是否合法
+            if (class_exists(Loader::parseClass($module, 'validate', $controller))) {
+                $validate = Loader::validate($controller);
+                if (!$validate->check($data)) {
+                    return ajax_return_adv_error($validate->getError());
+                }
+            }
+            $tablePre = Config::get("database.prefix");
+            $tableName = $data['tableName'] = $tablePre . Loader::parseName($data['tableName']);//数据表
+
+            //验证数据表是否已经存在
+            $ret = Db::query("SHOW TABLES LIKE '{$tableName}'");
+            if ($ret && isset($ret[0])) {
+                return ajax_return_adv_error('数据表已经存在');
+            }
+            // 写入数据 创建事务
+            Db::startTrans();
+            try {
+                //模型写入
+                $model = Loader::model($controller);
+                $model->save($data);
+                //获取自增主键
+                $modelId = $model->getLastInsID();
+
+                //获取model.sql(默认模型sql、模型字段)
+                $modelSql = file_get_contents(APP_PATH.'common/fields/model.sql');
+
+                //新的模型
+                $modelSql = str_replace('$basic_table', $tableName, $modelSql);//模型表的信息
+
+                //存储模型表字段的数据表
+                $modelSql = str_replace('$table_model_field', $tablePre.'admin_model_field', $modelSql);
+                $modelSql = str_replace('$model_id', $modelId, $modelSql);
+                $arrSql = explode(';', $modelSql);
+                //执行创建的sql语句
+                foreach ($arrSql as $v){
+                    if (!empty(trim($v))){
+                        Db::execute($v);
+                    }
+                }
+                //创建模型所需要的控制器、模型、验证等文件
+                $data['controller'] = $data['tableName'];//控制器
+                $model = new \Model();
+                $model->run($data);
+                // 提交事务
+                Db::commit();
+                return ajax_return_adv('添加成功');
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollback();
+                return ajax_return_adv_error($e->getMessage());
+            }
             /*
             //1、向model表中插入一条数据
             //2、向model_filed表中插入相应字段

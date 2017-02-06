@@ -252,7 +252,6 @@ class Model
             $td = '{include file="td" /}';
             $tdMenu .= tab(4) . '{tp:menu menu=\'sdelete\' /}';
         } else {
-            $form = implode("\n" . tab(1), $code['search']);
             $th = implode("\n" . tab(3), $code['th']);
             $td = implode("\n" . tab(3), $code['td']);
             $tdMenu .= tab(4) . '{tp:menu menu=\'sdeleteforever\' /}';
