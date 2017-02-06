@@ -1,6 +1,6 @@
 <?php
 /**
- * @desc    Ä£ĞÍÏà¹ØÊı¾İÉú³É
+ * @desc    æ¨¡å‹ç›¸å…³æ•°æ®ç”Ÿæˆ
  * @author    oyj<ouyangjun@zhangyue.com>
  * @version    2017-02-03 14:24
  */
@@ -19,7 +19,7 @@ class Model
     private $nameLower;
     private $data;
 
-    // ¿ØÖÆÆ÷ºÚÃûµ¥
+    // æ§åˆ¶å™¨é»‘åå•
     private $blacklistName = [
         'AdminGroup',
         'AdminNode',
@@ -38,7 +38,7 @@ class Model
         'Error',
     ];
 
-    // Êı¾İ±íºÚÃûµ¥
+    // æ•°æ®è¡¨é»‘åå•
     private $blacklistTable = [
         'admin_access',
         'admin_group',
@@ -55,60 +55,60 @@ class Model
     ];
 
     /**
-     * @desc Ö´ĞĞ´´½¨º¯Êı
-     * @param array $data postÏà¹ØÊı¾İ
+     * @desc æ‰§è¡Œåˆ›å»ºå‡½æ•°
+     * @param array $data postç›¸å…³æ•°æ®
      * @throws Exception
      */
     public function run($data)
     {
-        // ÔØÈëÄ¬ÈÏÅäÖÃ
+        // è½½å…¥é»˜è®¤é…ç½®
         $defaultConfigFile = APP_PATH . 'admin' . DS . 'extra' . DS . 'model.php';
         if (file_exists($defaultConfigFile)) {
             $data = array_merge(include $defaultConfigFile, $data);
         }
-        // ¼ì²éÄ¿Â¼ÊÇ·ñ¿ÉĞ´
+        // æ£€æŸ¥ç›®å½•æ˜¯å¦å¯å†™
         $pathCheck = APP_PATH . $data['module'] . DS;
         if (!self::checkWritable($pathCheck)) {
-            throw new Exception("Ä¿Â¼Ã»ÓĞÈ¨ÏŞ²»¿ÉĞ´£¬ÇëÖ´ĞĞÒ»ÏÂÃüÁîĞŞ¸ÄÈ¨ÏŞ£º<br>chmod -R 755 " . realpath($pathCheck), 403);
+            throw new Exception("ç›®å½•æ²¡æœ‰æƒé™ä¸å¯å†™ï¼Œè¯·æ‰§è¡Œä¸€ä¸‹å‘½ä»¤ä¿®æ”¹æƒé™ï¼š<br>chmod -R 755 " . realpath($pathCheck), 403);
         }
 
         $this->data = $data;
         $this->module = $data['module'];
-        $this->name = $data['tablename'];//¿ØÖÆÆ÷
-        $this->nameLower = Loader::parseName($this->name);//ÊÓÍ¼
+        $this->name = $data['controller'];//æ§åˆ¶å™¨
+        $this->nameLower = Loader::parseName($this->name);//è§†å›¾
 
-        // Êı¾İ±í±íÃû
-        $tableName = $data['tablename'];
+        // æ•°æ®è¡¨è¡¨å
+        $tableName = $data['tableName'];
 
-        //@TODO ½ö¶ÔÏÖÓĞºÚÃûµ¥½øĞĞÅĞ¶Ï£¬¶ÔÓÚºóÌí¼ÓµÄ¿ØÖÆÆ÷ºÍ±í Ã»ÓĞ²é¿´ÊÇ·ñÒÑ¾­´æÔÚ
-        //ĞèÒªÓÅ»¯¡¢´ËÊı¾İÓ¦¸Ã»ñÈ¡ÏÖÓĞµÄÊı¾İ±íĞÅÏ¢
-        // ÅĞ¶ÏÊÇ·ñÔÚºÚÃûµ¥ÖĞ
+        //@TODO ä»…å¯¹ç°æœ‰é»‘åå•è¿›è¡Œåˆ¤æ–­ï¼Œå¯¹äºåæ·»åŠ çš„æ§åˆ¶å™¨å’Œè¡¨ æ²¡æœ‰æŸ¥çœ‹æ˜¯å¦å·²ç»å­˜åœ¨
+        //éœ€è¦ä¼˜åŒ–ã€æ­¤æ•°æ®åº”è¯¥è·å–ç°æœ‰çš„æ•°æ®è¡¨ä¿¡æ¯
+        // åˆ¤æ–­æ˜¯å¦åœ¨é»‘åå•ä¸­
         if (in_array($this->name, $this->blacklistName)) {
-            throw new Exception('¸Ã¿ØÖÆÆ÷²»ÔÊĞí´´½¨');
+            throw new Exception('è¯¥æ§åˆ¶å™¨ä¸å…è®¸åˆ›å»º');
         }
 
-        // ÅĞ¶ÏÊÇ·ñÔÚÊı¾İ±íºÚÃûµ¥ÖĞ
+        // åˆ¤æ–­æ˜¯å¦åœ¨æ•°æ®è¡¨é»‘åå•ä¸­
         if (isset($tableName) && $tableName && in_array($tableName, $this->blacklistTable)) {
-            throw new Exception('¸ÃÊı¾İ±í²»ÔÊĞí´´½¨');
+            throw new Exception('è¯¥æ•°æ®è¡¨ä¸å…è®¸åˆ›å»º');
         }
 
-        // ´´½¨¾ßÌåÎÄ¼şĞèÒªµÄÄ¿Â¼
-        $dir_list = ["view" . DS . $this->nameLower];//ÊÓÍ¼
-        //´´½¨Ä¿Â¼
+        // åˆ›å»ºå…·ä½“æ–‡ä»¶éœ€è¦çš„ç›®å½•
+        $dir_list = ["view" . DS . $this->nameLower];//è§†å›¾
+        //åˆ›å»ºç›®å½•
         $this->buildDir($dir_list);
 
-        // ÎÄ¼şÂ·¾¶
-        $pathView = APP_PATH . $this->module . DS . "view" . DS . $this->nameLower . DS;//ÊÓÍ¼
-        $pathTemplate = APP_PATH . $this->module . DS . "view" . DS . "generate" . DS . "template" . DS;//Ä£°å
-        $fileName = APP_PATH . $this->module . DS . "%NAME%" . DS . $this->name . ".php";//phpÎÄ¼ş
+        // æ–‡ä»¶è·¯å¾„
+        $pathView = APP_PATH . $this->module . DS . "view" . DS . $this->nameLower . DS;//è§†å›¾
+        $pathTemplate = APP_PATH . $this->module . DS . "view" . DS . "generate" . DS . "template" . DS;//æ¨¡æ¿
+        $fileName = APP_PATH . $this->module . DS . "%NAME%" . DS . $this->name . ".php";//phpæ–‡ä»¶
         $code = $this->parseCode();
-        // Ö´ĞĞ·½·¨
+        // æ‰§è¡Œæ–¹æ³•
         $this->buildAll($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
     }
 
     /**
-     * @desc ¼ì²éµ±Ç°Ä£¿éÄ¿Â¼ÊÇ·ñ¿ÉĞ´ Í¨¹ıĞ´ÈëÄÚÈİ½øĞĞ²âÊÔ
-     * @param string $path Â·¾¶
+     * @desc æ£€æŸ¥å½“å‰æ¨¡å—ç›®å½•æ˜¯å¦å¯å†™ é€šè¿‡å†™å…¥å†…å®¹è¿›è¡Œæµ‹è¯•
+     * @param string $path è·¯å¾„
      * @return bool
      */
     public static function checkWritable($path = null)
@@ -121,7 +121,7 @@ class Model
             if (!file_put_contents($testFile, "test")) {
                 return false;
             }
-            // ½â³ıËø¶¨
+            // è§£é™¤é”å®š
             unlink($testFile);
             return true;
         } catch (Exception $e) {
@@ -130,19 +130,19 @@ class Model
     }
 
     /**
-     * @desc Éú³ÉËùÓĞÎÄ¼ş
-     * @param string $pathView ÊÓÍ¼Â·¾¶
-     * @param string $pathTemplate Ä¬ÈÏÄ£°å
-     * @param string $fileName ÎÄ¼şÃû³Æ
-     * @param string $tableName ±íÃû
-     * @param array $code ¸ñÊ½»¯ºóµÄformÊı¾İ
-     * @param array $data ±íµ¥Êı¾İ
+     * @desc ç”Ÿæˆæ‰€æœ‰æ–‡ä»¶
+     * @param string $pathView è§†å›¾è·¯å¾„
+     * @param string $pathTemplate é»˜è®¤æ¨¡æ¿
+     * @param string $fileName æ–‡ä»¶åç§°
+     * @param string $tableName è¡¨å
+     * @param array $code æ ¼å¼åŒ–åçš„formæ•°æ®
+     * @param array $data è¡¨å•æ•°æ®
      * @throws Exception
      */
     private function buildAll($pathView, $pathTemplate, $fileName, $tableName, $code, $data)
     {
-        // ´´½¨ÎÄ¼ş
-        $this->buildIndex($pathView, $pathTemplate, $code);//index.htmlÎÄ¼ş
+        // åˆ›å»ºæ–‡ä»¶
+        $this->buildIndex($pathView, $pathTemplate, $code);//index.htmlæ–‡ä»¶
 
         if (isset($data['menu']) && in_array('recyclebin', $data['menu'])) {
             $this->buildTh($pathView, $code);
@@ -159,31 +159,31 @@ class Model
         if (isset($data['create_table']) && $data['create_table']) {
             $this->buildTable($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
         }
-        // ½¨Á¢ÅäÖÃÎÄ¼ş
+        // å»ºç«‹é…ç½®æ–‡ä»¶
         if (isset($data['create_config']) && $data['create_config']) {
             $this->buildConfig($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
         }
     }
 
     /**
-     * ´´½¨Ä¿Â¼
+     * åˆ›å»ºç›®å½•
      */
     private function buildDir($dir_list)
     {
         foreach ($dir_list as $dir) {
             $path = APP_PATH . $this->module . DS . $dir;
             if (!is_dir($path)) {
-                // ´´½¨Ä¿Â¼
+                // åˆ›å»ºç›®å½•
                 mkdir($path, 0755, true);
             }
         }
     }
 
     /**
-     * @desc ´´½¨ edit.html ÎÄ¼ş
-     * @param string $path Â·¾¶
-     * @param string $pathTemplate Ä£°å
-     * @param array $code Ä£°åÊı¾İ
+     * @desc åˆ›å»º edit.html æ–‡ä»¶
+     * @param string $path è·¯å¾„
+     * @param string $pathTemplate æ¨¡æ¿
+     * @param array $code æ¨¡æ¿æ•°æ®
      * @return int
      */
     private function buildEdit($path, $pathTemplate, $code)
@@ -198,9 +198,9 @@ class Model
     }
 
     /**
-     * @desc ´´½¨th.htmlÎÄ¼ş
-     * @param string $path ´´½¨ÎÄ¼şµÄÂ·¾¶
-     * @param array $code Ä£°åÏêÏ¸ÄÚÈİ
+     * @desc åˆ›å»ºth.htmlæ–‡ä»¶
+     * @param string $path åˆ›å»ºæ–‡ä»¶çš„è·¯å¾„
+     * @param array $code æ¨¡æ¿è¯¦ç»†å†…å®¹
      * @return int
      */
     private function buildTh($path, $code)
@@ -212,9 +212,9 @@ class Model
     }
 
     /**
-     * @desc ´´½¨td.htmlÎÄ¼ş
-     * @param string $path ´´½¨ÎÄ¼şµÄÂ·¾¶
-     * @param array $code Ä£°åµÄÏêÏ¸ÄÚÈİ
+     * @desc åˆ›å»ºtd.htmlæ–‡ä»¶
+     * @param string $path åˆ›å»ºæ–‡ä»¶çš„è·¯å¾„
+     * @param array $code æ¨¡æ¿çš„è¯¦ç»†å†…å®¹
      * @return int
      */
     private function buildTd($path, $code)
@@ -226,15 +226,15 @@ class Model
     }
 
     /**
-     * @param string $path Â·¾¶
-     * @param string $pathTemplate Ä£°å
-     * @param array $code ±íµ¥Êı¾İ
+     * @param string $path è·¯å¾„
+     * @param string $pathTemplate æ¨¡æ¿
+     * @param array $code è¡¨å•æ•°æ®
      * @return int
      */
     private function buildIndex($path, $pathTemplate, $code)
     {
         $script = '';
-        // ²Ëµ¥È«Ñ¡µÄÄ¬ÈÏÖ±½Ó¼Ì³ĞÄ£°å
+        // èœå•å…¨é€‰çš„é»˜è®¤ç›´æ¥ç»§æ‰¿æ¨¡æ¿
         $menuArr = isset($this->data['menu']) ? $this->data['menu'] : [];
         $menu = '';
         if ($menuArr) {
@@ -245,7 +245,7 @@ class Model
             $tdMenu .= tab(4) . '{$vo.status|show_status=$vo.id}' . "\n";
         }
         $tdMenu .= tab(4) . '{tp:menu menu=\'sedit\' /}' . "\n";
-        // ÓĞ»ØÊÕÕ¾
+        // æœ‰å›æ”¶ç«™
         if (in_array('recyclebin', $menuArr)) {
             $form = '{include file="form" /}';
             $th = '{include file="th" /}';
@@ -270,10 +270,10 @@ class Model
     }
 
     /**
-     * @desc ´´½¨¿ØÖÆÆ÷ÎÄ¼ş
-     * @param string $pathTemplate Ä£°åÂ·¾¶
-     * @param string $fileName Ä¿±ê¿ØÖÆÆ÷Ãû³Æ
-     * @param array $code ¿ØÖÆÆ÷Ïà¹ØÊı¾İ
+     * @desc åˆ›å»ºæ§åˆ¶å™¨æ–‡ä»¶
+     * @param string $pathTemplate æ¨¡æ¿è·¯å¾„
+     * @param string $fileName ç›®æ ‡æ§åˆ¶å™¨åç§°
+     * @param array $code æ§åˆ¶å™¨ç›¸å…³æ•°æ®
      * @return int
      */
     private function buildController($pathTemplate, $fileName, $code)
@@ -290,20 +290,20 @@ class Model
     }
 
     /**
-     * @desc ´´½¨Ä£ĞÍÎÄ¼ş
-     * @param string $pathTemplate Ä£°åÎ»ÖÃ
-     * @param string $fileName Éú³ÉµÄmodelÃû³Æ
-     * @param array $code modelËùĞèÒªµÄ²ÎÊı
+     * @desc åˆ›å»ºæ¨¡å‹æ–‡ä»¶
+     * @param string $pathTemplate æ¨¡æ¿ä½ç½®
+     * @param string $fileName ç”Ÿæˆçš„modelåç§°
+     * @param array $code modelæ‰€éœ€è¦çš„å‚æ•°
      * @return int
      */
     private function buildModel($pathTemplate, $fileName, $code)
     {
-        // Ö±½ÓÉú³É¿ÕÄ£°å
+        // ç›´æ¥ç”Ÿæˆç©ºæ¨¡æ¿
         $template = file_get_contents($pathTemplate . "Model.tpl");
         $file = str_replace('%NAME%', 'model', $fileName);
         $autoTimestamp = '';
         if (isset($this->data['auto_timestamp']) && $this->data['auto_timestamp']) {
-            $autoTimestamp = '// ¿ªÆô×Ô¶¯Ğ´ÈëÊ±¼ä´Á×Ö¶Î' . "\n"
+            $autoTimestamp = '// å¼€å¯è‡ªåŠ¨å†™å…¥æ—¶é—´æˆ³å­—æ®µ' . "\n"
                 . tab(1) . 'protected $autoWriteTimestamp = \'int\';';
         }
 
@@ -316,10 +316,10 @@ class Model
     }
 
     /**
-     * @desc ´´½¨ÑéÖ¤Æ÷
-     * @param string $pathTemplate Ä£°åÃû³Æ
-     * @param string $fileName ÑéÖ¤Æ÷ÎÄ¼ş
-     * @param array $code ÑéÖ¤Æ÷¾ßÌåÊı¾İ
+     * @desc åˆ›å»ºéªŒè¯å™¨
+     * @param string $pathTemplate æ¨¡æ¿åç§°
+     * @param string $fileName éªŒè¯å™¨æ–‡ä»¶
+     * @param array $code éªŒè¯å™¨å…·ä½“æ•°æ®
      * @return int
      */
     private function buildValidate($pathTemplate, $fileName, $code)
@@ -336,96 +336,96 @@ class Model
     }
 
     /**
-     * @desc ´´½¨Êı¾İ±í
-     * @param string $tableName Êı¾İ±íÃû³Æ
+     * @desc åˆ›å»ºæ•°æ®è¡¨
+     * @param string $tableName æ•°æ®è¡¨åç§°
      * @return bool
      * @throws Exception
      */
     private function buildTable($tableName)
     {
-        // Ò»¶¨±ğÍü¼Ç±íÃûÇ°×º
+        // ä¸€å®šåˆ«å¿˜è®°è¡¨åå‰ç¼€
         $tableName = isset($this->data['table_name']) && $this->data['table_name'] ?
             $this->data['table_name'] :
             Config::get("database.prefix") . $tableName;
-        // ÔÚ MySQL ÖĞ£¬DROP TABLE Óï¾ä×Ô¶¯Ìá½»ÊÂÎñ£¬Òò´ËÔÚ´ËÊÂÎñÄÚµÄÈÎºÎ¸ü¸Ä¶¼²»»á±»»Ø¹ö£¬²»ÄÜÊ¹ÓÃÊÂÎñ
+        // åœ¨ MySQL ä¸­ï¼ŒDROP TABLE è¯­å¥è‡ªåŠ¨æäº¤äº‹åŠ¡ï¼Œå› æ­¤åœ¨æ­¤äº‹åŠ¡å†…çš„ä»»ä½•æ›´æ”¹éƒ½ä¸ä¼šè¢«å›æ»šï¼Œä¸èƒ½ä½¿ç”¨äº‹åŠ¡
         // http://php.net/manual/zh/pdo.rollback.php
         $tableExist = false;
-        // ÅĞ¶Ï±íÊÇ·ñ´æÔÚ
+        // åˆ¤æ–­è¡¨æ˜¯å¦å­˜åœ¨
         $ret = Db::query("SHOW TABLES LIKE '{$tableName}'");
-        // ±í´æÔÚ
+        // è¡¨å­˜åœ¨
         if ($ret && isset($ret[0])) {
-            //²»ÊÇÇ¿ÖÆ½¨±íµ«±í´æÔÚÊ±Ö±½Óreturn
+            //ä¸æ˜¯å¼ºåˆ¶å»ºè¡¨ä½†è¡¨å­˜åœ¨æ—¶ç›´æ¥return
             /*
             if (!isset($this->data['create_table_force']) || !$this->data['create_table_force']) {
                 return true;
             }
             Db::execute("RENAME TABLE {$tableName} to {$tableName}_build_bak");
             */
-            //@TODO return ±í´æÔÚµÄÇé¿öÓ¦¸ÃÖ±½Óreturn
+            //@TODO return è¡¨å­˜åœ¨çš„æƒ…å†µåº”è¯¥ç›´æ¥return
             $tableExist = true;
         }
         $auto_create_field = ['id', 'status', 'isdelete', 'create_time', 'update_time'];
-        // Ç¿ÖÆ½¨±íºÍ²»´æÔÚÔ­±íÖ´ĞĞ½¨±í²Ù×÷
+        // å¼ºåˆ¶å»ºè¡¨å’Œä¸å­˜åœ¨åŸè¡¨æ‰§è¡Œå»ºè¡¨æ“ä½œ
         $fieldAttr = [];
         $key = [];
         if (in_array('id', $auto_create_field)) {
-            $fieldAttr[] = tab(1) . "`id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '{$this->data['title']}Ö÷¼ü'";
+            $fieldAttr[] = tab(1) . "`id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '{$this->data['title']}ä¸»é”®'";
         }
         foreach ($this->data['field'] as $field) {
             if (!in_array($field['name'], $auto_create_field)) {
-                // ×Ö¶ÎÊôĞÔ
+                // å­—æ®µå±æ€§
                 $fieldAttr[] = tab(1) . "`{$field['name']}` {$field['type']}"
                     . ($field['extra'] ? ' ' . $field['extra'] : '')
                     . (isset($field['not_null']) && $field['not_null'] ? ' NOT NULL' : '')
                     . (strtolower($field['default']) == 'null' ? '' : " DEFAULT '{$field['default']}'")
                     . ($field['comment'] === '' ? '' : " COMMENT '{$field['comment']}'");
             }
-            // Ë÷Òı
+            // ç´¢å¼•
             if (isset($field['key']) && $field['key'] && $field['name'] != 'id') {
                 $key[] = tab(1) . "KEY `{$field['name']}` (`{$field['name']}`)";
             }
         }
 
         if (isset($this->data['menu'])) {
-            // ×Ô¶¯Éú³Éstatus×Ö¶Î£¬·ÀÖ¹resume,forbid·½·¨±¨´í£¬Èç¹û²»ĞèÒªÇëµ½Êı¾İ¿â×Ô¼ºÉ¾³ı
+            // è‡ªåŠ¨ç”Ÿæˆstatuså­—æ®µï¼Œé˜²æ­¢resume,forbidæ–¹æ³•æŠ¥é”™ï¼Œå¦‚æœä¸éœ€è¦è¯·åˆ°æ•°æ®åº“è‡ªå·±åˆ é™¤
             if (in_array("resume", $this->data['menu']) || in_array("forbid", $this->data['menu'])) {
-                $fieldAttr[] = tab(1) . "`status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '×´Ì¬£¬1-Õı³£ | 0-½ûÓÃ'";
+                $fieldAttr[] = tab(1) . "`status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT 'çŠ¶æ€ï¼Œ1-æ­£å¸¸ | 0-ç¦ç”¨'";
             }
-            // ×Ô¶¯Éú³É isdelete ÈíÉ¾³ı×Ö¶Î£¬·ÀÖ¹ delete,recycle,deleteForever ·½·¨±¨´í£¬Èç¹û²»ĞèÒªÇëµ½Êı¾İ¿â×Ô¼ºÉ¾³ı
+            // è‡ªåŠ¨ç”Ÿæˆ isdelete è½¯åˆ é™¤å­—æ®µï¼Œé˜²æ­¢ delete,recycle,deleteForever æ–¹æ³•æŠ¥é”™ï¼Œå¦‚æœä¸éœ€è¦è¯·åˆ°æ•°æ®åº“è‡ªå·±åˆ é™¤
             if (in_array("delete", $this->data['menu']) || in_array("recyclebin", $this->data['menu'])) {
-                // ĞŞ¸Ä¹Ù·½Èí¼şÉ¾³ıÊ¹ÓÃ¼ÇÂ¼Ê±¼ä´ÁµÄ·½Ê½£¬Ğ§ÂÊ½ÏµÍ£¬¸ÄÎªÃ¶¾ÙÀàĞÍµÄ tinyint(1)£¬ÏàÓ¦µÄtraits¼û thinkphp/library/traits/model/FakeDelete.php£¬Ê¹ÓÃ·½·¨ºÍ¹Ù·½Ò»Ñù
-                // Èí¼şÉ¾³ıÏêÏ¸½éÉÜ¼û£ºhttp://www.kancloud.cn/manual/thinkphp5/189658
-                $fieldAttr[] = tab(1) . "`isdelete` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT 'É¾³ı×´Ì¬£¬1-É¾³ı | 0-Õı³£'";
+                // ä¿®æ”¹å®˜æ–¹è½¯ä»¶åˆ é™¤ä½¿ç”¨è®°å½•æ—¶é—´æˆ³çš„æ–¹å¼ï¼Œæ•ˆç‡è¾ƒä½ï¼Œæ”¹ä¸ºæšä¸¾ç±»å‹çš„ tinyint(1)ï¼Œç›¸åº”çš„traitsè§ thinkphp/library/traits/model/FakeDelete.phpï¼Œä½¿ç”¨æ–¹æ³•å’Œå®˜æ–¹ä¸€æ ·
+                // è½¯ä»¶åˆ é™¤è¯¦ç»†ä»‹ç»è§ï¼šhttp://www.kancloud.cn/manual/thinkphp5/189658
+                $fieldAttr[] = tab(1) . "`isdelete` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT 'åˆ é™¤çŠ¶æ€ï¼Œ1-åˆ é™¤ | 0-æ­£å¸¸'";
             }
         }
 
-        // Èç¹û´´½¨Ä£ĞÍÔò×Ô¶¯Éú³Écreate_time£¬update_time×Ö¶Î
+        // å¦‚æœåˆ›å»ºæ¨¡å‹åˆ™è‡ªåŠ¨ç”Ÿæˆcreate_timeï¼Œupdate_timeå­—æ®µ
         if (isset($this->data['auto_timestamp']) && $this->data['auto_timestamp']) {
-            // ×Ô¶¯Éú³É create_time ×Ö¶Î£¬ÏàÓ¦×Ô¶¯Éú³ÉµÄÄ£ĞÍÒ²¿ªÆô×Ô¶¯Ğ´Èëcreate_timeºÍupdate_timeÊ±¼ä£¬²¢ÇÒ½«ÀàĞÍÖ¸¶¨ÎªintÀàĞÍ
-            // Ê±¼ä´ÁÊ¹ÓÃ·½·¨¼û£ºhttp://www.kancloud.cn/manual/thinkphp5/138668
-            $fieldAttr[] = tab(1) . "`create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '´´½¨Ê±¼ä'";
-            $fieldAttr[] = tab(1) . "`update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '¸üĞÂÊ±¼ä'";
+            // è‡ªåŠ¨ç”Ÿæˆ create_time å­—æ®µï¼Œç›¸åº”è‡ªåŠ¨ç”Ÿæˆçš„æ¨¡å‹ä¹Ÿå¼€å¯è‡ªåŠ¨å†™å…¥create_timeå’Œupdate_timeæ—¶é—´ï¼Œå¹¶ä¸”å°†ç±»å‹æŒ‡å®šä¸ºintç±»å‹
+            // æ—¶é—´æˆ³ä½¿ç”¨æ–¹æ³•è§ï¼šhttp://www.kancloud.cn/manual/thinkphp5/138668
+            $fieldAttr[] = tab(1) . "`create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'åˆ›å»ºæ—¶é—´'";
+            $fieldAttr[] = tab(1) . "`update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'æ›´æ–°æ—¶é—´'";
         }
-        // Ä¬ÈÏ×Ô¶¯´´½¨Ö÷¼üÎªid
+        // é»˜è®¤è‡ªåŠ¨åˆ›å»ºä¸»é”®ä¸ºid
         $fieldAttr[] = tab(1) . "PRIMARY KEY (`id`)";
 
-        // »áÉ¾³ıÖ®Ç°µÄ±í£¬»áÇå¿ÕÊı¾İ£¬ÖØĞÂ´´½¨±í£¬½÷É÷²Ù×÷
+        // ä¼šåˆ é™¤ä¹‹å‰çš„è¡¨ï¼Œä¼šæ¸…ç©ºæ•°æ®ï¼Œé‡æ–°åˆ›å»ºè¡¨ï¼Œè°¨æ…æ“ä½œ
         $sql_drop = "DROP TABLE IF EXISTS `{$tableName}`";
-        // Ä¬ÈÏ×Ö·û±àÂëÎªutf8£¬±íÒıÇæÄ¬ÈÏInnoDB£¬ÆäËû¶¼ÊÇÄ¬ÈÏ
+        // é»˜è®¤å­—ç¬¦ç¼–ç ä¸ºutf8ï¼Œè¡¨å¼•æ“é»˜è®¤InnoDBï¼Œå…¶ä»–éƒ½æ˜¯é»˜è®¤
         $sql_create = "CREATE TABLE `{$tableName}` (\n"
             . implode(",\n", array_merge($fieldAttr, $key))
             . "\n)ENGINE=" . (isset($this->data['table_engine']) ? $this->data['table_engine'] : 'InnoDB')
             . " DEFAULT CHARSET=utf8 COMMENT '{$this->data['title']}'";
 
-        // Ğ´ÈëÖ´ĞĞµÄSQLµ½ÈÕÖ¾ÖĞ£¬Èç¹û²»ÊÇÏëÒªµÄ±í½á¹¹£¬Çëµ½ÈÕÖ¾ÖĞËÑË÷BUILD_SQL£¬ÕÒµ½Ö´ĞĞµÄSQLµ½Êı¾İ¿âGUIÈí¼şÖĞĞŞ¸ÄÖ´ĞĞ£¬ĞŞ¸Ä±í½á¹¹
-        Log::write("BUILD_SQL£º\n{$sql_drop};\n{$sql_create};", Log::SQL);
-        // executeºÍquery·½·¨¶¼²»Ö§³Ö´«Èë·ÖºÅ (;)£¬²»Ö§³ÖÒ»´ÎÖ´ĞĞ¶àÌõ SQL
+        // å†™å…¥æ‰§è¡Œçš„SQLåˆ°æ—¥å¿—ä¸­ï¼Œå¦‚æœä¸æ˜¯æƒ³è¦çš„è¡¨ç»“æ„ï¼Œè¯·åˆ°æ—¥å¿—ä¸­æœç´¢BUILD_SQLï¼Œæ‰¾åˆ°æ‰§è¡Œçš„SQLåˆ°æ•°æ®åº“GUIè½¯ä»¶ä¸­ä¿®æ”¹æ‰§è¡Œï¼Œä¿®æ”¹è¡¨ç»“æ„
+        Log::write("BUILD_SQLï¼š\n{$sql_drop};\n{$sql_create};", Log::SQL);
+        // executeå’Œqueryæ–¹æ³•éƒ½ä¸æ”¯æŒä¼ å…¥åˆ†å· (;)ï¼Œä¸æ”¯æŒä¸€æ¬¡æ‰§è¡Œå¤šæ¡ SQL
         try {
             Db::execute($sql_drop);
             Db::execute($sql_create);
             Db::execute("DROP TABLE IF EXISTS `{$tableName}_build_bak`");
         } catch (\Exception $e) {
-            // Ä£ÄâÊÂÎñ²Ù×÷£¬¹ö»ØÔ­±í
+            // æ¨¡æ‹Ÿäº‹åŠ¡æ“ä½œï¼Œæ»šå›åŸè¡¨
             if ($tableExist) {
                 Db::execute("RENAME TABLE {$tableName}_build_bak to {$tableName}");
             }
@@ -435,7 +435,7 @@ class Model
     }
 
     /**
-     * ´´½¨ÅäÖÃÎÄ¼ş
+     * åˆ›å»ºé…ç½®æ–‡ä»¶
      */
     private function buildConfig($path, $pathTemplate, $fileName, $tableName, $code, $data)
     {
@@ -448,7 +448,7 @@ class Model
 
 
     /**
-     * ´´½¨ÎÄ¼şµÄ´úÂë
+     * åˆ›å»ºæ–‡ä»¶çš„ä»£ç 
      * @return array
      * return [
      * 'search'          => $search,
@@ -464,73 +464,75 @@ class Model
      */
     private function parseCode()
     {
-        // Éú³É th.html ÎÄ¼şµÄ´úÂë
+        // ç”Ÿæˆ th.html æ–‡ä»¶çš„ä»£ç 
         $th = ['<th width="25"><input type="checkbox"></th>'];
-        // Éú³É td.html ÎÄ¼şµÄ´úÂë
+        // ç”Ÿæˆ td.html æ–‡ä»¶çš„ä»£ç 
         $td = ['<td><input type="checkbox" name="id[]" value="{$vo.id}"></td>'];
-        // Éú³É edit.html ÎÄ¼şµÄ´úÂë
+        // ç”Ÿæˆ edit.html æ–‡ä»¶çš„ä»£ç 
         $editField = '';
-        // radioÀàĞÍµÄ±íµ¥¿Ø¼ş±à¼­×´Ì¬Ê¹ÓÃjavascript¸³Öµ
+        // radioç±»å‹çš„è¡¨å•æ§ä»¶ç¼–è¾‘çŠ¶æ€ä½¿ç”¨javascriptèµ‹å€¼
         $setChecked = [];
-        // selectÀàĞÍµÄ±íµ¥¿Ø¼ş±à¼­×´Ì¬Ê¹ÓÃjavascript¸³Öµ
+        // selectç±»å‹çš„è¡¨å•æ§ä»¶ç¼–è¾‘çŠ¶æ€ä½¿ç”¨javascriptèµ‹å€¼
         $setSelected = [];
-        // ËÑË÷Ê±±»Ñ¡ÖĞµÄÖµ
+        // æœç´¢æ—¶è¢«é€‰ä¸­çš„å€¼
         $searchSelected = '';
-        // ¿ØÖÆÆ÷¹ıÂËÆ÷
+        // æ§åˆ¶å™¨è¿‡æ»¤å™¨
         $filter = '';
-        // Éú³ÉÑéÖ¤Æ÷ÎÄ¼şµÄ´úÂë
+        // ç”ŸæˆéªŒè¯å™¨æ–‡ä»¶çš„ä»£ç 
         $validate = '';
-        // DatePicker½Å±¾ÒıÈë
+        // DatePickerè„šæœ¬å¼•å…¥
         $scriptSearch = [];
         $scriptEdit = [];
-        //Ìí¼ÓµÄ×Ö¶Î
+        //æ·»åŠ çš„å­—æ®µ
         if (isset($this->data['form']) && $this->data['form']) {
             foreach ($this->data['form'] as $form) {
-                //Ñ¡ÏîÖµ
+                //é€‰é¡¹å€¼
                 //@TODO
                 $options = $this->parseOption($form['option']);
                 // th
-                $th[] = '<th width="">' . $form['title'] . "</th>";
+                $th[] = '<th width="">' . $form['name'] . "</th>";
 
-                // ÏñidÕâÖÖ°×Ãûµ¥×Ö¶Î²»ĞèÒª×Ô¶¯Éú³Éµ½±à¼­Ò³
-                if (!in_array($form['name'], ['id', 'isdelete', 'create_time', 'update_time'])) {
-                    // Ê¹ÓÃ Validform ²å¼şÇ°¶ËÑéÖ¤Êı¾İ¸ñÊ½£¬Éú³ÉÔÚ±íµ¥¿Ø¼şÉÏµÄÑéÖ¤¹æÔò
+                // åƒidè¿™ç§ç™½åå•å­—æ®µä¸éœ€è¦è‡ªåŠ¨ç”Ÿæˆåˆ°ç¼–è¾‘é¡µ
+                if (!in_array($form['field'], ['id', 'isdelete', 'create_time', 'update_time'])) {
+                    // ä½¿ç”¨ Validform æ’ä»¶å‰ç«¯éªŒè¯æ•°æ®æ ¼å¼ï¼Œç”Ÿæˆåœ¨è¡¨å•æ§ä»¶ä¸Šçš„éªŒè¯è§„åˆ™
                     $validateForm = '';
                     if (isset($form['validate']) && $form['validate']['datatype']) {
                         $v = $form['validate'];
-                        $defaultDesc = in_array($form['type'], ['checkbox', 'radio', 'select', 'date']) ? 'Ñ¡Ôñ' : 'ÌîĞ´';
+                        $defaultDesc = in_array($form['field'], ['checkbox', 'radio', 'select', 'date']) ? 'é€‰æ‹©' : 'å¡«å†™';
+                        //validform éªŒè¯
                         $validateForm = ' datatype="' . $v['datatype'] . '"'
-                            . (' nullmsg="' . ($v['nullmsg'] ? $v['nullmsg'] : 'Çë' . $defaultDesc . $form['title']) . '"')
+                            . (' nullmsg="' . ($v['nullmsg'] ? $v['nullmsg'] : 'è¯·' . $defaultDesc . $form['title']) . '"')
                             . ($v['errormsg'] ? ' errormsg="' . $v['errormsg'] . '"' : '')
                             . (isset($form['require']) && $form['require'] ? '' : ' ignore="ignore"');
-                        $validate .= tab(2) . '"' . $form['name'] . '|' . $form['title'] . '" => "'
+                        //php éªŒè¯
+                        $validate .= tab(2) . '"' . $form['field'] . '|' . $form['name'] . '" => "'
                             . (isset($form['require']) && $form['require'] ? 'require' : '') . '",' . "\n";
                     }
-                    //×Ö¶Î
+                    //å­—æ®µ
                     $editField .= tab(2) . '<div class="row cl">' . "\n"
                         . tab(3) . '<label class="form-label col-xs-3 col-sm-3">'
                         . (isset($form['require']) && $form['require'] ? '<span class="c-red">*</span>' : '')
-                        . $form['title'] . '£º</label>' . "\n"
+                        . $form['name'] . 'ï¼š</label>' . "\n"
                         . tab(3) . '<div class="formControls col-xs-6 col-sm-6'
-                        . (in_array($form['type'], ['radio', 'checkbox']) ? ' skin-minimal' : '')
+                        . (in_array($form['formtype'], ['radio', 'checkbox']) ? ' skin-minimal' : '')
                         . '">' . "\n";
-                    switch ($form['type']) {
+                    switch ($form['formtype']) {
                         case "radio":
                         case "checkbox":
-                            if ($form['type'] == "radio") {
-                                // radioÀàĞÍµÄ¿Ø¼ş½øĞĞ±à¼­×´Ì¬¸³Öµ£¬checkboxÀàĞÍ¿Ø¼şÇë×ÔĞĞ¸ù¾İÇé¿ö¸³Öµ
-                                $setChecked[] = tab(2) . '$("[name=\'' . $form['name'] . '\'][value=\'{$vo.' . $form['name'] . ' ?? \'' . $form['default'] . '\'}\']").attr("checked", true);';
+                            if ($form['formtype'] == "radio") {
+                                // radioç±»å‹çš„æ§ä»¶è¿›è¡Œç¼–è¾‘çŠ¶æ€èµ‹å€¼ï¼Œcheckboxç±»å‹æ§ä»¶è¯·è‡ªè¡Œæ ¹æ®æƒ…å†µèµ‹å€¼
+                                $setChecked[] = tab(2) . '$("[name=\'' . $form['field'] . '\'][value=\'{$vo.' . $form['field'] . ' ?? \'' . $form['default'] . '\'}\']").attr("checked", true);';
                             } else {
                                 $setChecked[] = tab(2) . 'var checks = \'' . $form['default'] . '\'.split(",");' . "\n"
                                     . tab(2) . 'if (checks.length > 0){' . "\n"
                                     . tab(3) . 'for (var i in checks){' . "\n"
-                                    . tab(4) . '$("[name=\'' . $form['name'] . '[]\'][value=\'"+checks[i]+"\']").attr("checked", true);' . "\n"
+                                    . tab(4) . '$("[name=\'' . $form['field'] . '[]\'][value=\'"+checks[i]+"\']").attr("checked", true);' . "\n"
                                     . tab(3) . '}' . "\n"
                                     . tab(2) . '}';
                             }
 
-                            // Ä¬ÈÏÖ»Éú³ÉÒ»¸ö¿ÕµÄÊ¾Àı¿Ø¼ş£¬Çë¸ù¾İÇé¿ö×ÔĞĞ¸´ÖÆ±à¼­
-                            $name = $form['name'] . ($form['type'] == "checkbox" ? '[]' : '');
+                            // é»˜è®¤åªç”Ÿæˆä¸€ä¸ªç©ºçš„ç¤ºä¾‹æ§ä»¶ï¼Œè¯·æ ¹æ®æƒ…å†µè‡ªè¡Œå¤åˆ¶ç¼–è¾‘
+                            $name = $form['field'] . ($form['formtype'] == "checkbox" ? '[]' : '');
 
                             switch ($options[0]) {
                                 case 'string':
@@ -549,27 +551,27 @@ class Model
                             }
                             break;
                         case "select":
-                            // selectÀàĞÍµÄ¿Ø¼ş½øĞĞ±à¼­×´Ì¬¸³Öµ
-                            $setSelected[] = tab(2) . '$("[name=\'' . $form['name'] . '\']").find("[value=\'{$vo.' . $form['name'] . ' ?? \'' . $form['default'] . '\'}\']").attr("selected", true);';
+                            // selectç±»å‹çš„æ§ä»¶è¿›è¡Œç¼–è¾‘çŠ¶æ€èµ‹å€¼
+                            $setSelected[] = tab(2) . '$("[name=\'' . $form['field'] . '\']").find("[value=\'{$vo.' . $form['field'] . ' ?? \'' . $form['default'] . '\'}\']").attr("selected", true);';
                             $editField .= tab(4) . '<div class="select-box">' . "\n"
-                                . tab(5) . '<select name="' . $form['name'] . '" class="select"' . $validateForm . '>' . "\n"
+                                . tab(5) . '<select name="' . $form['field'] . '" class="select"' . $validateForm . '>' . "\n"
                                 . implode("\n", $this->getOption($options, $form, false, 6)) . "\n"
                                 . tab(5) . '</select>' . "\n"
                                 . tab(4) . '</div>' . "\n";
                             break;
                         case "textarea":
-                            // Ä¬ÈÏÉú³ÉµÄtextarea¼ÓÈëÁËÊäÈë×Ö·û³¤¶ÈÊµÊ±Í³¼Æ£¬H-ui.admin¹Ù·½µÄtextarealength·½·¨ÓĞÎÊÌâ£¬ÇëÊ¹ÓÃ tpadmin ¿ò¼ÜĞŞ¸ÄºóµÄÔ´Âë£¬Ò²¿É¿½±´ H-ui.js ÀïÏàÓ¦µÄ·½·¨
-                            // Èç¹û²»ĞèÒª×Ö·û³¤¶ÈÊµÊ±Í³¼Æ£¬ÇëÔÚÉú³É´úÂëÖĞÉ¾³ıtextareaÉÏµÄonKeyUpÊÂ¼şºÍÏÂÃæp±êÇ©ÄÇĞĞ
-                            $editField .= tab(4) . '<textarea class="textarea" placeholder="" name="' . $form['name'] . '" '
+                            // é»˜è®¤ç”Ÿæˆçš„textareaåŠ å…¥äº†è¾“å…¥å­—ç¬¦é•¿åº¦å®æ—¶ç»Ÿè®¡ï¼ŒH-ui.adminå®˜æ–¹çš„textarealengthæ–¹æ³•æœ‰é—®é¢˜ï¼Œè¯·ä½¿ç”¨ tpadmin æ¡†æ¶ä¿®æ”¹åçš„æºç ï¼Œä¹Ÿå¯æ‹·è´ H-ui.js é‡Œç›¸åº”çš„æ–¹æ³•
+                            // å¦‚æœä¸éœ€è¦å­—ç¬¦é•¿åº¦å®æ—¶ç»Ÿè®¡ï¼Œè¯·åœ¨ç”Ÿæˆä»£ç ä¸­åˆ é™¤textareaä¸Šçš„onKeyUpäº‹ä»¶å’Œä¸‹é¢pæ ‡ç­¾é‚£è¡Œ
+                            $editField .= tab(4) . '<textarea class="textarea" placeholder="" name="' . $form['field'] . '" '
                                 . 'onKeyUp="textarealength(this, 100)"' . $validateForm . '>'
-                                . '{$vo.' . $form['name'] . ' ?? \'' . $form['default'] . '\'}'
+                                . '{$vo.' . $form['field'] . ' ?? \'' . $form['default'] . '\'}'
                                 . '</textarea>' . "\n"
                                 . tab(4) . '<p class="textarea-numberbar"><em class="textarea-length">0</em>/100</p>' . "\n";
                             break;
                         case "date":
                             $editField .= tab(4) . '<input type="text" class="input-text Wdate" '
-                                . 'placeholder="' . $form['title'] . '" name="' . $form['name'] . '" '
-                                . 'value="' . '{$vo.' . $form['name'] . ' ?? \'' . $form['default'] . '\'}' . '" '
+                                . 'placeholder="' . $form['name'] . '" name="' . $form['field'] . '" '
+                                . 'value="' . '{$vo.' . $form['field'] . ' ?? \'' . $form['default'] . '\'}' . '" '
                                 . '{literal} onfocus="WdatePicker({dateFmt:\'yyyy-MM-dd\'})" {/literal} '
                                 . $validateForm . '>' . "\n";
                             $scriptEdit['date'] = "\n" . '<script type="text/javascript" src="__LIB__/My97DatePicker/WdatePicker.js"></script>';
@@ -578,9 +580,9 @@ class Model
                         case "password":
                         case "number":
                         default:
-                            $editField .= tab(4) . '<input type="' . $form['type'] . '" class="input-text" '
-                                . 'placeholder="' . $form['title'] . '" name="' . $form['name'] . '" '
-                                . 'value="' . '{$vo.' . $form['name'] . ' ?? \'' . $form['default'] . '\'}' . '" '
+                            $editField .= tab(4) . '<input type="' . $form['formtype'] . '" class="input-text" '
+                                . 'placeholder="' . $form['name'] . '" name="' . $form['field'] . '" '
+                                . 'value="' . '{$vo.' . $form['field'] . ' ?? \'' . $form['default'] . '\'}' . '" '
                                 . $validateForm . '>' . "\n";
                             break;
                     }
@@ -591,13 +593,14 @@ class Model
             }
         }
 
+        //@TODO form æäº¤è¿‡æ»¤
         if ($filter) {
             $filter = 'protected function filter(&$map)' . "\n"
                 . tab(1) . '{' . "\n"
                 . $filter
                 . tab(1) . '}';
         }
-        // ×Ô¶¯ÆÁ±Î²éÑ¯Ìõ¼şisdelete×Ö¶Î
+        // è‡ªåŠ¨å±è”½æŸ¥è¯¢æ¡ä»¶isdeleteå­—æ®µ
         if (!isset($this->data['menu']) ||
             (isset($this->data['menu']) &&
                 !in_array("delete", $this->data['menu']) &&
@@ -625,14 +628,14 @@ class Model
     }
 
     /**
-     * @desc Éú³É¸´Ñ¡¿ò¡¢µ¥Ñ¡¿ò
-     * @param array $form Ä¬ÈÏform
-     * @param string $name ×Ö¶ÎÃû³Æ Êı¾İ×Ö¶Î
-     * @param string $validateForm inputÑéÖ¤¹æÔò
-     * @param string $title ×Ö¶ÎÃû³Æ ËµÃ÷
-     * @param string $value Ñ¡ÏîÖµ
+     * @desc ç”Ÿæˆå¤é€‰æ¡†ã€å•é€‰æ¡†
+     * @param array $form é»˜è®¤form
+     * @param string $name å­—æ®µåç§° æ•°æ®å­—æ®µ
+     * @param string $validateForm inputéªŒè¯è§„åˆ™
+     * @param string $title å­—æ®µåç§° è¯´æ˜
+     * @param string $value é€‰é¡¹å€¼
      * @param int $key
-     * @param int $tab ¿Õ¸ñ¸öÊı
+     * @param int $tab ç©ºæ ¼ä¸ªæ•°
      * @return string
      */
     private function getCheckbox($form, $name, $validateForm, $title, $value = '', $key = 0, $tab = 4)
@@ -645,11 +648,11 @@ class Model
     }
 
     /**
-     * @desc »ñÈ¡ÏÂÀ­¿òµÄoption
-     * @param array $options Ñ¡Ïî
-     * @param array $form form ±íµ¥
-     * @param bool $empty ÊÇ·ñÓĞÑ¡ÔñËùÓĞµÄÇé¿ö
-     * @param int $tab ¿Õ¸ñ
+     * @desc è·å–ä¸‹æ‹‰æ¡†çš„option
+     * @param array $options é€‰é¡¹
+     * @param array $form form è¡¨å•
+     * @param bool $empty æ˜¯å¦æœ‰é€‰æ‹©æ‰€æœ‰çš„æƒ…å†µ
+     * @param int $tab ç©ºæ ¼
      * @return array
      */
     private function getOption($options, $form, $empty = true, $tab = 3)
@@ -661,7 +664,7 @@ class Model
             case 'var':
                 $ret = [];
                 if ($empty) {
-                    $ret[] = tab($tab) . '<option value="">ËùÓĞ' . $form['title'] . '</option>';
+                    $ret[] = tab($tab) . '<option value="">æ‰€æœ‰' . $form['title'] . '</option>';
                 }
                 $ret[] = tab($tab) . '{foreach name="$Think.config.conf.' . $options[1] . '" item=\'v\' key=\'k\'}';
                 $ret[] = tab($tab + 1) . '<option value="{$k}">{$v}</option>';
@@ -680,22 +683,22 @@ class Model
     }
 
     /**
-     * @desc ¸ñÊ½»¯Ñ¡ÏîÖµ
-     * @param string $option Ñ¡Ïî
+     * @desc æ ¼å¼åŒ–é€‰é¡¹å€¼
+     * @param string $option é€‰é¡¹
      * @param bool $string
      * @return array
      */
     private function parseOption($option, $string = false)
     {
         if (!$option) return ['string', $option];
-        // {vo.item} ÕâÖÖ¸ñÊ½´«ÈëµÄ±äÁ¿
+        // {vo.item} è¿™ç§æ ¼å¼ä¼ å…¥çš„å˜é‡
         if (preg_match('/^\{(.*?)\}$/', $option, $match)) {
             return ['var', $match[1]];
         } else {
             if ($string) {
                 return ['string', $option];
             }
-            // key:val#key2:val2#val3#... ÕâÖÖ¸ñÊ½
+            // key:val#key2:val2#val3#... è¿™ç§æ ¼å¼
             $ret = [];
             $arrVal = explode('#', $option);
             foreach ($arrVal as $val) {

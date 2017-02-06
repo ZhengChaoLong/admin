@@ -62,10 +62,9 @@ class AdminModel extends Controller{
      */
     public function add()
     {
-        $controller = $this->request->controller();
-        $module = $this->request->module();
-
         if ($this->request->isAjax()) {
+            $this->run();
+            /*
             //1、向model表中插入一条数据
             //2、向model_filed表中插入相应字段
             //3、创建对应模型表
@@ -103,6 +102,7 @@ class AdminModel extends Controller{
 
                 return ajax_return_adv_error($e->getMessage());
             }
+            */
         } else {
             // 添加
             return $this->view->fetch(isset($this->template) ? $this->template : 'edit');
@@ -245,7 +245,7 @@ class AdminModel extends Controller{
      * 3、创建对应模型的数据表
      * 4、创建模型的控制器、模型、视图文件
      */
-    public function run(){
+    private function run(){
         $controller = $this->request->controller();
         $module = $this->request->module();
         $data = $this->request->post();
@@ -258,8 +258,12 @@ class AdminModel extends Controller{
                 return ajax_return_adv_error($validate->getError());
             }
         }
+
+        $data['controller'] = $data['tableName'];//控制器
+        $tablePre = Config::get("database.prefix");
+        $tableName = $data['tableName'] = $tablePre . Loader::parseName($data['tableName']);//数据表
+
         //验证数据表是否已经存在
-        $tableName = Config::get("database.prefix") . $data['tablename'];
         $ret = Db::query("SHOW TABLES LIKE '{$tableName}'");
         if ($ret && isset($ret[0])) {
             return ajax_return_adv_error('数据表已经存在');
@@ -275,7 +279,6 @@ class AdminModel extends Controller{
 
             //获取model.sql(默认模型sql、模型字段)
             $modelSql = file_get_contents(APP_PATH.'common/fields/model.sql');
-            $tablePre = Config::get("database.prefix");
 
             //新的模型
             $modelSql = str_replace('$basic_table', $tableName, $modelSql);//模型表的信息
@@ -291,7 +294,6 @@ class AdminModel extends Controller{
             $model->run($data);
             // 提交事务
             Db::commit();
-            //return ajax_return_adv('生成成功', '', false, '', '', ['action' => Url::build($data['controller'] . '/index')]);
             return ajax_return_adv('添加成功');
         } catch (\Exception $e) {
             // 回滚事务

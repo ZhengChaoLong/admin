@@ -7,6 +7,6 @@ class AdminModel extends Validate
 {
     protected $rule = [
         "name|模型名称" => "require",
-        "tablename|模型表键名" => "require",
+        "tableName|模型表键名" => "require",
     ];
 }
