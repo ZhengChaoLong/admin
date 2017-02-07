@@ -99,8 +99,7 @@ function high_light($string, $needle = '', $class = 'c-red')
  * @param string $controller 默认当前控制器
  * @return string
  */
-function show_status($status, $id, $field = 'id', $controller = '')
-{
+function show_status($status, $id, $field = 'id', $controller = ''){
     $controller === '' && $controller = Request::instance()->controller();
     switch ($status) {
         // 恢复

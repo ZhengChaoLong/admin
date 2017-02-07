@@ -13,7 +13,7 @@
         <div class="row cl">
             <label class="form-label col-xs-3 col-sm-3"><span class="c-red">*</span>模型表键名：</label>
             <div class="formControls col-xs-6 col-sm-6">
-                <input type="text" class="input-text" placeholder="字母、驼峰式、例如AdminGroup" name="tableName" value="{$vo.tableName ?? ''}"  datatype="*" nullmsg="模型表键名不可以为空">
+                <input type="text" {present name="edit"} readonly {/present} class="input-text" placeholder="字母、驼峰式、例如AdminGroup" name="tableName" value="{$vo.tableName ?? ''}"  datatype="*" nullmsg="模型表键名不可以为空">
             </div>
             <div class="col-xs-3 col-sm-3"></div>
         </div>
