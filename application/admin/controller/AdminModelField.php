@@ -19,30 +19,17 @@ class AdminModelField extends Controller
      * 首页
      * @return mixed
      */
-    public function index()
-    {
-        //@TODO 需要传递modelid获取相应的数据
+    public function index(){
+
         $model = $this->getModel();
         // 列表过滤器，生成查询Map对象
         $map = $this->search($model);
 
-        //@TODO 如果传值到当前对象的
         if ($this::$isdelete !== false) {
-            $map['isdelete'] = $this::$isdelete;
+            $map['isdelete'] = $this::$isdelete; //显示未删除的字段
         }
 
-        // 特殊过滤器，后缀是方法名的
-        $actionFilter = 'filter' . $this->request->action();
-        if (method_exists($this, $actionFilter)) {
-            $this->$actionFilter($map);
-        }
-
-        // 自定义过滤器
-        if (method_exists($this, 'filter')) {
-            $this->filter($map);
-        }
-
-        $this->datalist($model, $map);
+        $this->datalist($model, $map, '', '' ,true);
         return $this->view->fetch();
     }
 

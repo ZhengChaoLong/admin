@@ -1,12 +1,12 @@
 -- 主表
 CREATE TABLE `$basic_table` (
   `id` mediumint(8) unsigned NOT NULL auto_increment,
-  `type` smallint(5) unsigned NOT NULL comment '类别',
-  `title` varchar(80) NOT NULL default '' comment '标题',
-  `description` varchar(255) NOT NULL default '' comment '描述',
-  `sort` tinyint(3) unsigned NOT NULL default '0' comment '排序',
-  `status` tinyint(2) unsigned NOT NULL default '1' comment '状态',
-  `isdelete` tinyint(1) unsigned default '0' COMMIT '删除状态，1-删除 | 0-正常',
+  `type` smallint(5) unsigned NOT NULL COMMENT '类别',
+  `title` varchar(80) NOT NULL default '' COMMENT '标题',
+  `description` varchar(255) NOT NULL default '' COMMENT '描述',
+  `sort` tinyint(3) unsigned NOT NULL default '0' COMMENT '排序',
+  `status` tinyint(2) unsigned NOT NULL default '1' COMMENT '状态',
+  `isdelete` tinyint(1) unsigned NOT NULL default '0' COMMENT '删除状态，1-删除 | 0-正常',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY  (`id`),

@@ -94,6 +94,7 @@ CREATE TABLE IF NOT EXISTS `zy_admin_model_field` (
   `errortips` varchar(255) NOT NULL COMMENT '错误提示',
   `formtype` varchar(20) NOT NULL COMMENT '字段类型与定义的数据库类型映射关系',
   `setting` mediumtext NOT NULL COMMENT '字段属性数据库字段属性',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态，1-正常 | 0-禁用',
   `isunique` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否唯一',
   `disabled` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否使用',
   `isdelete` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '删除状态，1-删除 | 0-正常',

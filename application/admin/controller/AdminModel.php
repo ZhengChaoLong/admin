@@ -31,17 +31,6 @@ class AdminModel extends Controller{
             $map['isdelete'] = $this::$isdelete;
         }
 
-        // 特殊过滤器，后缀是方法名的
-        $actionFilter = 'filter' . $this->request->action();
-        if (method_exists($this, $actionFilter)) {
-            $this->$actionFilter($map);
-        }
-
-        // 自定义过滤器
-        if (method_exists($this, 'filter')) {
-            $this->filter($map);
-        }
-
         $this->datalist($model, $map);
         return $this->view->fetch();
     }
@@ -53,16 +42,14 @@ class AdminModel extends Controller{
     public function recycleBin()
     {
         $this::$isdelete = 1;
-
         return $this->index();
     }
 
     /**
-     * 添加
+     * @desc 添加
      * @return mixed
      */
-    public function add()
-    {
+    public function add(){
         if ($this->request->isAjax()) {
             $controller = $this->request->controller();
             $module = $this->request->module();
@@ -77,8 +64,9 @@ class AdminModel extends Controller{
                 }
             }
             $data['controller'] = $data['tableName'];//控制器
-            $tablePre = Config::get("database.prefix");
-            $tableName = $data['tableName'] = $tablePre . Loader::parseName($data['tableName']);//数据表
+            $tablePre = Config::get("database.prefix");//表前缀
+            $tableName = $tablePre . Loader::parseName($data['tableName']);//数据表
+            $data['tableName'] = Loader::parseName($data['tableName']);
 
             //验证数据表是否已经存在
             $ret = Db::query("SHOW TABLES LIKE '{$tableName}'");
@@ -99,7 +87,6 @@ class AdminModel extends Controller{
 
                 //新的模型
                 $modelSql = str_replace('$basic_table', $tableName, $modelSql);//模型表的信息
-
                 //存储模型表字段的数据表
                 $modelSql = str_replace('$table_model_field', $tablePre.'admin_model_field', $modelSql);
                 $modelSql = str_replace('$model_id', $modelId, $modelSql);
@@ -121,45 +108,6 @@ class AdminModel extends Controller{
                 Db::rollback();
                 return ajax_return_adv_error($e->getMessage());
             }
-            /*
-            //1、向model表中插入一条数据
-            //2、向model_filed表中插入相应字段
-            //3、创建对应模型表
-            // 插入
-
-            $data = $this->request->post();
-            unset($data['id']);
-
-            // 验证
-            if (class_exists(Loader::parseClass($module, 'validate', $controller))) {
-                $validate = Loader::validate($controller);
-                if (!$validate->check($data)) {
-                    return ajax_return_adv_error($validate->getError());
-                }
-            }
-
-            // 写入数据
-            Db::startTrans();
-            try {
-                if (class_exists(Loader::parseClass($module, 'model', $controller))) {
-                    //使用模型写入，可以在模型中定义更高级的操作
-                    $model = Loader::model($controller);
-                    $ret = $model->save($data);
-                } else {
-                    // 简单的直接使用db写入
-                    $model = Db::name($this->parseTable($controller));
-                    $ret = $model->insert($data);
-                }
-                // 提交事务
-                Db::commit();
-                return ajax_return_adv('添加成功');
-            } catch (\Exception $e) {
-                // 回滚事务
-                Db::rollback();
-
-                return ajax_return_adv_error($e->getMessage());
-            }
-            */
         } else {
             // 添加
             return $this->view->fetch(isset($this->template) ? $this->template : 'edit');

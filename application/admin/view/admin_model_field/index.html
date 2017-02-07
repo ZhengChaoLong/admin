@@ -1,7 +1,6 @@
 {extend name="template/base" /}
 {block name="content"}
 <div class="page-container">
-    {include file="form" /}
     <div class="cl pd-5 bg-1 bk-gray">
         <span class="l">
             {tp:menu menu="add,forbid,resume,delete,recyclebin" /}
@@ -14,7 +13,7 @@
         <thead>
         <tr class="text-c">
             {include file="th" /}
-            <th width="70">操作</th>
+            <th width="10%">操作</th>
         </tr>
         </thead>
         <tbody>

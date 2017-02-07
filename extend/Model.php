@@ -78,8 +78,7 @@ class Model
         $this->nameLower = Loader::parseName($this->name);//视图
 
         // 数据表表名
-        $fullTableName = $data['tableName'];//带前缀
-        $tableName = Loader::parseName($this->name);//不带前缀
+        $fullTableName =Config::get("database.prefix") . $data['tableName'];//带前缀
         //@TODO 仅对现有黑名单进行判断，对于后添加的控制器和表 没有查看是否已经存在
         //需要优化、此数据应该获取现有的数据表信息
         // 判断是否在黑名单中
@@ -103,7 +102,7 @@ class Model
         $fileName = APP_PATH . $this->module . DS . "%NAME%" . DS . $this->name . ".php";//php文件
         $code = $this->parseCode();
         // 执行方法
-        $this->buildAll($pathView, $pathTemplate, $fileName, $tableName, $code, $data);
+        $this->buildAll($pathView, $pathTemplate, $fileName, $data['tableName'], $code, $data);
     }
 
     /**
@@ -252,8 +251,8 @@ class Model
         $file = $path . "index.html";
 
         return file_put_contents($file, str_replace(
-                ["[MENU]", "[TH]", "[TD]", "[TD_MENU]", "[SCRIPT]"],
-                [$menu, $th, $td, $tdMenu, $script],
+                ['[FORM]', "[MENU]", "[TH]", "[TD]", "[TD_MENU]", "[SCRIPT]"],
+                ['', $menu, $th, $td, $tdMenu, $script],
                 $template
             )
         );
