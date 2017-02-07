@@ -78,8 +78,8 @@ class Model
         $this->nameLower = Loader::parseName($this->name);//视图
 
         // 数据表表名
-        $tableName = $data['tableName'];
-
+        $fullTableName = $data['tableName'];//带前缀
+        $tableName = Loader::parseName($this->name);//不带前缀
         //@TODO 仅对现有黑名单进行判断，对于后添加的控制器和表 没有查看是否已经存在
         //需要优化、此数据应该获取现有的数据表信息
         // 判断是否在黑名单中
@@ -88,7 +88,7 @@ class Model
         }
 
         // 判断是否在数据表黑名单中
-        if (isset($tableName) && $tableName && in_array($tableName, $this->blacklistTable)) {
+        if (isset($fullTableName) && $fullTableName && in_array($fullTableName, $this->blacklistTable)) {
             throw new Exception('该数据表不允许创建');
         }
 
@@ -252,7 +252,7 @@ class Model
         $file = $path . "index.html";
 
         return file_put_contents($file, str_replace(
-                ["[FORM]", "[MENU]", "[TH]", "[TD]", "[TD_MENU]", "[SCRIPT]"],
+                ["[MENU]", "[TH]", "[TD]", "[TD_MENU]", "[SCRIPT]"],
                 [$menu, $th, $td, $tdMenu, $script],
                 $template
             )
@@ -291,11 +291,9 @@ class Model
         // 直接生成空模板
         $template = file_get_contents($pathTemplate . "Model.tpl");
         $file = str_replace('%NAME%', 'model', $fileName);
-        $autoTimestamp = '';
-        if (isset($this->data['auto_timestamp']) && $this->data['auto_timestamp']) {
-            $autoTimestamp = '// 开启自动写入时间戳字段' . "\n"
-                . tab(1) . 'protected $autoWriteTimestamp = \'int\';';
-        }
+        //时间戳自动写入
+        $autoTimestamp = '// 开启自动写入时间戳字段' . "\n"
+            . tab(1) . 'protected $autoWriteTimestamp = \'int\';';
 
         return file_put_contents($file, str_replace(
                 ["[NAME]", "[NAMESPACE]", "[TABLE]", "[AUTO_TIMESTAMP]"],

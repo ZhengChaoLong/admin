@@ -76,6 +76,7 @@ class AdminModel extends Controller{
                     return ajax_return_adv_error($validate->getError());
                 }
             }
+            $data['controller'] = $data['tableName'];//控制器
             $tablePre = Config::get("database.prefix");
             $tableName = $data['tableName'] = $tablePre . Loader::parseName($data['tableName']);//数据表
 
@@ -89,7 +90,7 @@ class AdminModel extends Controller{
             try {
                 //模型写入
                 $model = Loader::model($controller);
-                $model->save($data);
+                $model->allowField(true)->save($data);
                 //获取自增主键
                 $modelId = $model->getLastInsID();
 
@@ -110,7 +111,6 @@ class AdminModel extends Controller{
                     }
                 }
                 //创建模型所需要的控制器、模型、验证等文件
-                $data['controller'] = $data['tableName'];//控制器
                 $model = new \Model();
                 $model->run($data);
                 // 提交事务

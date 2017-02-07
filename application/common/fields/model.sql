@@ -6,6 +6,7 @@ CREATE TABLE `$basic_table` (
   `description` varchar(255) NOT NULL default '' comment '描述',
   `sort` tinyint(3) unsigned NOT NULL default '0' comment '排序',
   `status` tinyint(2) unsigned NOT NULL default '1' comment '状态',
+  `isdelete` tinyint(1) unsigned default '0' COMMIT '删除状态，1-删除 | 0-正常',
   `create_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY  (`id`),
