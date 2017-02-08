@@ -7,6 +7,7 @@
 namespace app\admin\controller;
 
 use think\Db;
+use think\Exception;
 use think\Loader;
 use think\Config;
 use app\admin\Controller;
@@ -24,24 +25,10 @@ class AdminModel extends Controller{
         $model = $this->getModel();
         // 列表过滤器，生成查询Map对象（过滤条件）
         $map = $this->search($model);
-
-        //@TODO 如果传值到当前对象的
-        if ($this::$isdelete !== false) {
-            $map['isdelete'] = $this::$isdelete;
-        }
+        $map['isdelete'] = $this::$isdelete;
 
         $this->datalist($model, $map);
         return $this->view->fetch();
-    }
-
-    /**
-     * 回收站
-     * @return mixed
-     */
-    public function recycleBin()
-    {
-        $this::$isdelete = 1;
-        return $this->index();
     }
 
     /**
@@ -174,22 +161,33 @@ class AdminModel extends Controller{
     public function delete(){
         $model = $this->getModel();
         $pk = $model->getPk();
-        $ids = $this->request->param($pk);
+        try{
+            $ids = $this->request->param($pk);
 
-        $modelInfo = $model->find($ids);
-        $tableName = $modelInfo['tableName'];
-        $controller = Loader::parseName($tableName, 1);
-        
-        dump($controller);
-        //删除控制器、model、view相关文件
+            $modelInfo = $model->find($ids);
+            $tableName = $modelInfo['tableName'];
+            $controller = Loader::parseName($tableName, 1);
 
-        /*
-        $where[$pk] = ["in", $ids];
-        if (false === $model->where($where)->delete()) {
-            return ajax_return_adv_error($model->getError());
+            //删除控制器、model、view相关文件及相关数据表和字段
+            // 文件路径
+            $pathView = APP_PATH . 'admin' . DS . "view" . DS . $tableName . DS;//视图
+            $fileName = APP_PATH . 'admin' . DS . "%NAME%" . DS . $controller . ".php";//php文件
+            //删除文件
+            delDirAndFile($pathView, true);
+            delDirAndFile(str_replace('%NAME%', 'controller',$fileName));
+            delDirAndFile(str_replace('%NAME%', 'model',$fileName));
+
+            $sql = 'DROP TABLE IF EXISTS ' . Config::get("database.prefix") . $tableName;
+            Db::execute($sql);
+            //删除字段表中的相关字段和数据表
+            $modelField = Loader::model('AdminModelField');
+            $modelField->where('modelid', $modelInfo['id'])->delete();
+            $where[$pk] = ["in", $ids];
+            $model->where($where)->delete();
+            return ajax_return_adv("删除成功");
+        }catch (Exception $e){
+            return ajax_return_adv_error($e->getMessage());
         }
-        */
-        return ajax_return_adv("删除成功");
     }
 
     /**
