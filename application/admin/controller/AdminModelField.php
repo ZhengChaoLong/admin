@@ -20,15 +20,10 @@ class AdminModelField extends Controller
      * @return mixed
      */
     public function index(){
-
         $model = $this->getModel();
         // 列表过滤器，生成查询Map对象
         $map = $this->search($model);
-
-        if ($this::$isdelete !== false) {
-            $map['isdelete'] = $this::$isdelete; //显示未删除的字段
-        }
-
+        $map['isdelete'] = $this::$isdelete; //显示未删除的字段
         $this->datalist($model, $map, '', '' ,true);
         return $this->view->fetch();
     }
@@ -37,10 +32,8 @@ class AdminModelField extends Controller
      * 回收站
      * @return mixed
      */
-    public function recycleBin()
-    {
+    public function recycleBin(){
         $this::$isdelete = 1;
-
         return $this->index();
     }
 
@@ -48,17 +41,13 @@ class AdminModelField extends Controller
      * 添加
      * @return mixed
      */
-    public function add()
-    {
+    public function add(){
         $controller = $this->request->controller();
         $module = $this->request->module();
-
         if ($this->request->isAjax()) {
             // 插入
-
             $data = $this->request->post();
             unset($data['id']);
-
             // 验证
             if (class_exists(Loader::parseClass($module, 'validate', $controller))) {
                 $validate = Loader::validate($controller);
@@ -91,6 +80,8 @@ class AdminModelField extends Controller
             }
         } else {
             // 添加
+            include APP_PATH.'common/fields/fields.php';
+            $this->view->assign('fileType', $fileType);
             return $this->view->fetch(isset($this->template) ? $this->template : 'edit');
         }
     }
@@ -140,7 +131,6 @@ class AdminModelField extends Controller
             } catch (\Exception $e) {
                 // 回滚事务
                 Db::rollback();
-
                 return ajax_return_adv_error($e->getMessage());
             }
         } else {
@@ -153,9 +143,9 @@ class AdminModelField extends Controller
             if (!$vo) {
                 throw new HttpException(404, '该记录不存在');
             }
-
             $this->view->assign("vo", $vo);
-
+            include APP_PATH.'common/fields/fields.php';
+            $this->view->assign('fileType', $fileType);
             return $this->view->fetch();
         }
     }
@@ -163,24 +153,21 @@ class AdminModelField extends Controller
     /**
      * 默认删除操作
      */
-    public function delete()
-    {
+    public function delete(){
         return $this->updateField("isdelete", 1, "移动到回收站成功");
     }
 
     /**
      * 从回收站恢复
      */
-    public function recycle()
-    {
+    public function recycle(){
         return $this->updateField("isdelete", 0, "恢复成功");
     }
 
     /**
      * 默认禁用操作
      */
-    public function forbid()
-    {
+    public function forbid(){
         return $this->updateField("status", 0, "禁用成功");
     }
 
@@ -188,8 +175,7 @@ class AdminModelField extends Controller
     /**
      * 默认恢复操作
      */
-    public function resume()
-    {
+    public function resume(){
         return $this->updateField("status", 1, "恢复成功");
     }
 
@@ -220,8 +206,6 @@ class AdminModelField extends Controller
         if (false === $model->where($where)->delete()) {
             return ajax_return_adv_error($model->getError());
         }
-
         return ajax_return_adv("清空回收站成功");
     }
-    
 }

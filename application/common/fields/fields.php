@@ -4,7 +4,7 @@
  * @author: zy
  * @version: 1.0 2017/2/6 11:58
  */
-return [
+$fileType =  [
     'text'=>'单行文本',
     'textarea'=>'多行文本',
     'editor'=>'编辑器',

@@ -4,9 +4,23 @@
     <form class="form form-horizontal" id="form" method="post" action="{:\\think\\Request::instance()->baseUrl()}">
         <input type="hidden" name="id" value="{:isset($vo.id)?$vo.id:''}">
         <div class="row cl">
+            <label class="form-label col-xs-3 col-sm-3">字段类型：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <div class="select-box">
+                    <select name="formtype" class="select" datatype="*" nullmsg="请选择字段类型">
+                        <option value="">请选择字段类型</option>
+                        <?php if(is_array($fileType) || $fileType instanceof \think\Collection): if( count($fileType)==0 ) : echo "" ;else: foreach($fileType as $key=>$type): ?>
+                        <option value="<?=$key; ?>"><?=$type; ?></option>
+                        <?php endforeach; endif; else: echo "" ;endif; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-3 col-sm-3"></div>
+        </div>
+        <div class="row cl">
             <label class="form-label col-xs-3 col-sm-3">字段名：</label>
             <div class="formControls col-xs-6 col-sm-6">
-                <input type="text" class="input-text" placeholder="字段名" name="field" value="{$vo.field ?? ''}" >
+                <input type="text" class="input-text" placeholder="字母、数字、下划线组成" name="field" value="{$vo.field ?? ''}"  datatype="*2-30" nullmsg="请输入字段名">
             </div>
             <div class="col-xs-3 col-sm-3"></div>
         </div>
@@ -61,22 +75,15 @@
             <div class="col-xs-3 col-sm-3"></div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-3 col-sm-3">字段类型：</label>
-            <div class="formControls col-xs-6 col-sm-6">
-                <div class="select-box">
-                    <select name="formtype" class="select">
-                        <option value=""></option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-xs-3 col-sm-3"></div>
-        </div>
-        <div class="row cl">
             <label class="form-label col-xs-3 col-sm-3">值唯一：</label>
             <div class="formControls col-xs-6 col-sm-6 skin-minimal">
                 <div class="radio-box">
-                    <input type="radio" name="isunique" id="isunique-0" value="">
-                    <label for="isunique-0"></label>
+                    <input type="radio" name="isunique" id="isunique1"  value="1">
+                    <label for="isunique1">是</label>
+                </div>
+                <div class="radio-box">
+                    <input type="radio" name="isunique" id="isunique0" value="0">
+                    <label for="isunique0">否</label>
                 </div>
             </div>
             <div class="col-xs-3 col-sm-3"></div>
@@ -85,8 +92,12 @@
             <label class="form-label col-xs-3 col-sm-3">是否可用：</label>
             <div class="formControls col-xs-6 col-sm-6 skin-minimal">
                 <div class="radio-box">
-                    <input type="radio" name="disabled" id="disabled-0" value="">
-                    <label for="disabled-0"></label>
+                    <input type="radio" name="disabled" id="disabled-0" value="0">
+                    <label for="disabled-0">是</label>
+                </div>
+                <div class="radio-box">
+                    <input type="radio" name="disabled" id="disabled-1" value="1">
+                    <label for="disabled-1">否</label>
                 </div>
             </div>
             <div class="col-xs-3 col-sm-3"></div>
