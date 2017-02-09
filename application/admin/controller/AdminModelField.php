@@ -25,6 +25,7 @@ class AdminModelField extends Controller
         $map = $this->search($model);
         $map['isdelete'] = $this::$isdelete; //显示未删除的字段
         $this->datalist($model, $map, '', '' ,true);
+        $this->view->assign('modelid', $this->request->param('modelid/d',0));
         return $this->view->fetch();
     }
 
