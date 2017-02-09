@@ -143,6 +143,11 @@ class Tp extends Taglib
                     list($url, $param) = $this->parseUrl($url);
                     $parseStr .= ' <a href="javascript:;" onclick="del_forever(this,\'{$vo.id}\',\'<?php echo \think\Url::build(\'' . $url . '\', [' . $param . ']); ?>\')" class="label label-danger radius ml-5">' . $title . '</a>';
                     break;
+                case 'preview':
+                    $title = isset($titleArr[$k]) && $titleArr[$k] ? $titleArr[$k] : '预览';
+                    list($url, $param) = $this->parseUrl($url);
+                    $parseStr .= ' <a target="_blank" href="<?php echo \think\Url::build(\'' . $url . '\', [' . $param . ']); ?>:"  class="btn btn-primary radius mr-5">' . $title . '</a>';
+                    break;
                 default:
                     // 默认为小菜单
                     $title = isset($titleArr[$k]) && $titleArr[$k] ? $titleArr[$k] : '菜单';

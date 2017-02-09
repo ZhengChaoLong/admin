@@ -60,18 +60,15 @@ class AdminModelField extends Controller
             // 写入数据
             Db::startTrans();
             try {
-                if (class_exists(Loader::parseClass($module, 'model', $controller))) {
-                    //使用模型写入，可以在模型中定义更高级的操作
-                    $model = Loader::model($controller);
-                    $ret = $model->save($data);
-                } else {
-                    // 简单的直接使用db写入
-                    $model = Db::name($this->parseTable($controller));
-                    $ret = $model->insert($data);
-                }
+                //使用模型写入，可以在模型中定义更高级的操作
+                $model = Loader::model($controller);
+                $data['setting'] = json_encode($data['setting']);
+                dump($data);die();
+                /*
+                $model->allowField(true)->save($data);
                 // 提交事务
                 Db::commit();
-
+                */
                 return ajax_return_adv('添加成功');
             } catch (\Exception $e) {
                 // 回滚事务
@@ -144,7 +141,10 @@ class AdminModelField extends Controller
             if (!$vo) {
                 throw new HttpException(404, '该记录不存在');
             }
+            $setting = json_decode($vo['setting'],true);
+            $this->view->assign("setting", $setting);
             $this->view->assign("vo", $vo);
+            //字段类型
             include APP_PATH.'common/fields/fields.php';
             $this->view->assign('fileType', $fileType);
             return $this->view->fetch();
@@ -208,5 +208,16 @@ class AdminModelField extends Controller
             return ajax_return_adv_error($model->getError());
         }
         return ajax_return_adv("清空回收站成功");
+    }
+
+    /**
+     * @desc 预览
+     */
+    public function preview() {
+        $modelId = $this->request->param('modelid/d',0);
+        $model = new \Model();
+        $formInfo = $model->get($modelId);
+        $this->view->assign('formInfo', $formInfo);
+        return $this->view->fetch();
     }
 }

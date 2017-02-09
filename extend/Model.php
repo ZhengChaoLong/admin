@@ -6,7 +6,6 @@
  */
 
 use think\Exception;
-use think\Log;
 use think\Config;
 use think\Db;
 use think\Loader;
@@ -580,5 +579,55 @@ class Model
             }
             return ['array', $ret];
         }
+    }
+
+
+    function get($modelId) {
+        $modelField = Loader::model('ModelField');
+        $fields = $modelField->where('modelid', $modelId)->select();
+
+        $info = array();
+        foreach($fields as $field=>$v) {
+            if ($v['status'] == 0 || $v['isdelete'] == 1){
+                continue;
+            }
+
+            $func = $v['formtype'];
+            if(!method_exists($this, $func)) continue;
+            $form = $this->$func($v);
+
+            if($form !== false) {
+                if(defined('IN_ADMIN')) {
+                    if($v['isbase']) {
+                        $star = $v['minlength'] || $v['pattern'] ? 1 : 0;
+                        $info['base'][$field] = array('name'=>$v['name'], 'tips'=>$v['tips'], 'form'=>$form, 'star'=>$star,'isomnipotent'=>$v['isomnipotent'],'formtype'=>$v['formtype']);
+                    } else {
+                        $star = $v['minlength'] || $v['pattern'] ? 1 : 0;
+                        $info['senior'][$field] = array('name'=>$v['name'], 'tips'=>$v['tips'], 'form'=>$form, 'star'=>$star,'isomnipotent'=>$v['isomnipotent'],'formtype'=>$v['formtype']);
+                    }
+                } else {
+                    $star = $v['minlength'] || $v['pattern'] ? 1 : 0;
+                    $info[$field] = array('name'=>$v['name'], 'tips'=>$v['tips'], 'form'=>$form, 'star'=>$star,'isomnipotent'=>$v['isomnipotent'],'formtype'=>$v['formtype']);
+                }
+            }
+        }
+        return $info;
+    }
+
+    function text($fieldInfo) {
+        extract($fieldInfo);
+
+        //<span class="c-red">*</span>模型名称：
+
+
+        $setting = string2array($setting);
+        $size = $setting['size'];
+        if(!$value) $value = $defaultvalue;
+        $type = $ispassword ? 'password' : 'text';
+        $errortips = $this->fields[$field]['errortips'];
+        if($errortips || $minlength) $this->formValidator .= '$("#'.$field.'").formValidator({onshow:"",onfocus:"'.$errortips.'"}).inputValidator({min:1,onerror:"'.$errortips.'"});';
+        return '<input type="text" name="info['.$field.']" id="'.$field.'" size="'.$size.'" value="'.$value.'" class="input-text" '.$formattribute.' '.$css.'>';
+
+    //<input type="text" class="input-text" placeholder="模型名称" name="name" value="{$vo.name ?? ''}"  datatype="*" nullmsg="模型名称不可以为空">
     }
 }
