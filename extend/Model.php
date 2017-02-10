@@ -586,7 +586,7 @@ class Model
         $modelField = Loader::model('ModelField');
         $fields = $modelField->where('modelid', $modelId)->select();
 
-        $info = array();
+        $info = [];
         foreach($fields as $field=>$v) {
             if ($v['status'] == 0 || $v['isdelete'] == 1){
                 continue;
@@ -594,40 +594,147 @@ class Model
 
             $func = $v['formtype'];
             if(!method_exists($this, $func)) continue;
-            $form = $this->$func($v);
+            $setting = json_decode($v['setting'], true);
+            $form = $this->$func($v, $setting);
 
-            if($form !== false) {
-                if(defined('IN_ADMIN')) {
-                    if($v['isbase']) {
-                        $star = $v['minlength'] || $v['pattern'] ? 1 : 0;
-                        $info['base'][$field] = array('name'=>$v['name'], 'tips'=>$v['tips'], 'form'=>$form, 'star'=>$star,'isomnipotent'=>$v['isomnipotent'],'formtype'=>$v['formtype']);
-                    } else {
-                        $star = $v['minlength'] || $v['pattern'] ? 1 : 0;
-                        $info['senior'][$field] = array('name'=>$v['name'], 'tips'=>$v['tips'], 'form'=>$form, 'star'=>$star,'isomnipotent'=>$v['isomnipotent'],'formtype'=>$v['formtype']);
-                    }
-                } else {
-                    $star = $v['minlength'] || $v['pattern'] ? 1 : 0;
-                    $info[$field] = array('name'=>$v['name'], 'tips'=>$v['tips'], 'form'=>$form, 'star'=>$star,'isomnipotent'=>$v['isomnipotent'],'formtype'=>$v['formtype']);
-                }
+            if($form) {
+                $info[$field] = $form;
             }
         }
         return $info;
     }
 
-    function text($fieldInfo) {
+    /**
+     * @desc 生成 text 类型form
+     * @param array $fieldInfo 字段信息
+     * @param array $setting 字段相关设置
+     * @return array
+     */
+    private function text($fieldInfo, $setting) {
         extract($fieldInfo);
+        extract($setting);
+        $rsData = [];
+        if (isset($required) && $required == 1){
+            $rsData['label'] = '<span class="c-red">*</span>';
+        }
+        $rsData['label'] .= $name .':';
+        //validform 验证
+        $validateForm = ' datatype="' . $pattern . '"'
+            . ($nullmsg ? ' nullmsg="' . $nullmsg . '"' : '')
+            . ($errortips ? ' errormsg="' . $errortips . '"' : '');
+        $element = '<input type="text" class="input-text" placeholder="'.$tips.'" name="' .$field . '" value="{$vo.field ?? ''}" '.$validateForm.'>';
+        $rsData['element'] = $element;
+        return $rsData;
+    }
 
-        //<span class="c-red">*</span>模型名称：
+    /**
+     * @desc 生成 textarea 类型form
+     * @param array $fieldInfo 字段信息
+     * @param array $setting 字段相关设置
+     * @return array
+     */
+    private function textarea($fieldInfo, $setting) {
+        extract($fieldInfo);
+        extract($setting);
+        $rsData = [];
+        if (isset($required) && $required == 1){
+            $rsData['label'] = '<span class="c-red">*</span>';
+        }
+        $rsData['label'] .= $name .':';
+        //validform 验证
+        $validateForm = ' datatype="' . $pattern . '"'
+            . ($nullmsg ? ' nullmsg="' . $nullmsg . '"' : '')
+            . ($errortips ? ' errormsg="' . $errortips . '"' : '');
 
+        $element = '<textarea ' . $validateForm . ' class="textarea" placeholder="" name="'.$field
+            . ' " onKeyUp="textarealength(this, 100)">{$vo.field ?? \'\'}</textarea>';
+        $element .= '<p class="textarea-numberbar"><em class="textarea-length">0</em>/100</p>';
 
-        $setting = string2array($setting);
-        $size = $setting['size'];
-        if(!$value) $value = $defaultvalue;
-        $type = $ispassword ? 'password' : 'text';
-        $errortips = $this->fields[$field]['errortips'];
-        if($errortips || $minlength) $this->formValidator .= '$("#'.$field.'").formValidator({onshow:"",onfocus:"'.$errortips.'"}).inputValidator({min:1,onerror:"'.$errortips.'"});';
-        return '<input type="text" name="info['.$field.']" id="'.$field.'" size="'.$size.'" value="'.$value.'" class="input-text" '.$formattribute.' '.$css.'>';
+        $rsData['element'] = $element;
+        return $rsData;
+    }
 
-    //<input type="text" class="input-text" placeholder="模型名称" name="name" value="{$vo.name ?? ''}"  datatype="*" nullmsg="模型名称不可以为空">
+    /**
+     * @desc 生成 date 类型form
+     * @param array $fieldInfo 字段信息
+     * @param array $setting 字段相关设置
+     * @return mixed
+     */
+    private function date($fieldInfo, $setting){
+        extract($fieldInfo);
+        extract($setting);
+
+        if (isset($required) && $required == 1){
+            $rsData['label'] = '<span class="c-red">*</span>';
+        }
+        $rsData['label'] .= $name .':';
+
+        //validform 验证
+        $validateForm = ' datatype="' . $pattern . '"'
+            . ($nullmsg ? ' nullmsg="' . $nullmsg . '"' : '')
+            . ($errortips ? ' errormsg="' . $errortips . '"' : '');
+
+        $element = tab(4) . '<input type="text" class="input-text Wdate" '
+            . 'placeholder="' . $tips . '" name="' . $field . '" '
+            . 'value="' . '{$vo.' . $field . '|date="y-m-d",###}' . '" '
+            . '{literal} onfocus="WdatePicker({dateFmt:\'yyyy-MM-dd\'})" {/literal} '
+            . $validateForm . '>' . "\n";
+
+        $rsData['element'] = $element;
+        $rsData['script'] =  '<script type="text/javascript" src="__LIB__/My97DatePicker/WdatePicker.js"></script>';
+
+        return $rsData;
+    }
+
+    /**
+     * @desc number 类型form
+     * @param array $fieldInfo 字段信息
+     * @param array $setting 字段相关设置
+     * @return array
+     */
+    private function number($fieldInfo, $setting){
+        extract($fieldInfo);
+        extract($setting);
+        $rsData = [];
+        if (isset($required) && $required == 1){
+            $rsData['label'] = '<span class="c-red">*</span>';
+        }
+        $rsData['label'] .= $name .':';
+        //validform 验证
+        $validateForm = ' datatype="' . $pattern . '"'
+            . ($nullmsg ? ' nullmsg="' . $nullmsg . '"' : '')
+            . ($errortips ? ' errormsg="' . $errortips . '"' : '');
+        $element = tab(4) . '<input type="number" class="input-text" '
+            . 'placeholder="' . $tips . '" name="' . $field . '" '
+            . 'value="' . '{$vo.' . $field . '}' . '" '
+            . $validateForm . '>' . "\n";
+        $rsData['element'] = $element;
+        return $rsData;
+    }
+
+    /**
+     * @desc number 类型form
+     * @param array $fieldInfo 字段信息
+     * @param array $setting 字段相关设置
+     * @return array
+     */
+    private function password($fieldInfo, $setting){
+        extract($fieldInfo);
+        extract($setting);
+        $rsData = [];
+        if (isset($required) && $required == 1){
+            $rsData['label'] = '<span class="c-red">*</span>';
+        }
+        $rsData['label'] .= $name .':';
+        //validform 验证
+        $validateForm = ' datatype="' . $pattern . '"'
+            . ($nullmsg ? ' nullmsg="' . $nullmsg . '"' : '')
+            . ($errortips ? ' errormsg="' . $errortips . '"' : '');
+        $element = tab(4) . '<input type="password" class="input-text" '
+            . 'placeholder="' . $tips . '" name="' . $field . '" '
+            . 'value="' . '{$vo.' . $field . '}' . '" '
+            . $validateForm . '>' . "\n";
+        $rsData['element'] = $element;
+        return $rsData;
     }
 }

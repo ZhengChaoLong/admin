@@ -63,23 +63,20 @@ class AdminModelField extends Controller
                 //使用模型写入，可以在模型中定义更高级的操作
                 $model = Loader::model($controller);
                 $data['setting'] = json_encode($data['setting']);
-                dump($data);die();
-                /*
                 $model->allowField(true)->save($data);
                 // 提交事务
                 Db::commit();
-                */
                 return ajax_return_adv('添加成功');
             } catch (\Exception $e) {
                 // 回滚事务
                 Db::rollback();
-
                 return ajax_return_adv_error($e->getMessage());
             }
         } else {
             // 添加
             include APP_PATH.'common/fields/fields.php';
             $this->view->assign('fileType', $fileType);
+            $this->view->assign('dataType', $dataType);
             return $this->view->fetch(isset($this->template) ? $this->template : 'edit');
         }
     }
@@ -113,18 +110,11 @@ class AdminModelField extends Controller
             // 更新数据
             Db::startTrans();
             try {
-                if (class_exists(Loader::parseClass($module, 'model', $controller))) {
-                    // 使用模型更新，可以在模型中定义更高级的操作
-                    $model = Loader::model($controller);
-                    $ret = $model->isUpdate(true)->save($data, ['id' => $data['id']]);
-                } else {
-                    // 简单的直接使用db更新
-                    $model = Db::name($this->parseTable($controller));
-                    $ret = $model->where('id', $data['id'])->update($data);
-                }
+                $model = Loader::model($controller);
+                $data['setting'] = json_encode($data['setting']);
+                $model->isUpdate(true)->allowField(true)->save($data, ['id' => $data['id']]);
                 // 提交事务
                 Db::commit();
-
                 return ajax_return_adv("编辑成功");
             } catch (\Exception $e) {
                 // 回滚事务
@@ -147,6 +137,7 @@ class AdminModelField extends Controller
             //字段类型
             include APP_PATH.'common/fields/fields.php';
             $this->view->assign('fileType', $fileType);
+            $this->view->assign('dataType', $dataType);
             return $this->view->fetch();
         }
     }
